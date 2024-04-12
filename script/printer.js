@@ -13,14 +13,14 @@ let hasPrinter = size == 5.7 || size == 8
 let device = {};
 let options = {};
 let printer = {};
-device = new escpos.USB();
-options = { encoding: "Big5", width: 42 }
-printer = new escpos.Printer(device, options);
 
 if (hasPrinter) {
     try {
-    } catch (e) {
-        console.log(e)
+        device = new escpos.USB();
+        options = { encoding: "Big5", width: 42 }
+        printer = new escpos.Printer(device, options);
+    } catch {
+
     }
 }
 
@@ -33,7 +33,7 @@ function printOrderWithQR(url = `http://${LocalIP}:3000/pos`, orderNumber = 1, t
                 console.error('打印機連接錯誤:', error);
                 return;
             }
-            console.log('打印機連接成功,即將打印QRCODE');
+            // console.log('打印機連接成功');
             // console.log(url, orderNumber, tableNumber, contents);
 
             const qrContent = `${url}`;
@@ -104,14 +104,14 @@ function printOrderWithQR(url = `http://${LocalIP}:3000/pos`, orderNumber = 1, t
                             .close()
                     });
             } else {
-                console.log("尺寸沒有支援")
+                // console.log("尺寸沒有支援")
             }
 
-            console.log('即將打印QRCODE打印結束');
+            // console.log('打印結束');
             return true
         });
-    } catch (e) {
-        console.log(e)
+    } catch {
+
     }
 }
 
@@ -130,7 +130,7 @@ function printOrder(insertOrder = defaultOrderData) {
                 console.error('打印機連接錯誤:', error);
                 return;
             }
-            console.log('打印機連接成功，即將打印訂單');
+            // console.log('打印機連接成功');
 
             if (size == 5.7) {
                 printer
@@ -221,14 +221,16 @@ function printOrder(insertOrder = defaultOrderData) {
                     .cut()
                     .close()
             } else {
-                console.log("尺寸沒有支援")
+                // console.log("尺寸沒有支援")
             }
-            console.log('訂單打印完成');
+
+            // console.log('打印完成');
             return true
         });
-    } catch (e) {
-        console.log(e)
+    } catch {
+
     }
+
 }
 
 // 列印發票
@@ -249,7 +251,7 @@ async function printInvoice(insertInvoiceData = defaultInvoiceData) {
                 console.error(`打印機連接錯誤:`, error);
                 return;
             }
-            console.log(`打印機連接成功，即將列印發票`);
+            // console.log(`打印機連接成功`);
             // 串接條碼內容
             const barcodeContent = `${invoiceData.invoicePeriod}${invoiceData.invoiceNumber}${invoiceData.randomCode}`;
             // console.log(invoiceData);
@@ -317,14 +319,14 @@ async function printInvoice(insertInvoiceData = defaultInvoiceData) {
                         .close()
                 });
             } else {
-                console.log("尺寸沒有支援")
+                // console.log("尺寸沒有支援")
             }
 
-            console.log(`發票打印完成`);
+            // console.log(`打印完成`);
             return true
         });
-    } catch (e) {
-        console.log(e)
+    } catch {
+
     }
 }
 

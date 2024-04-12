@@ -1,19 +1,171 @@
-const pool = require("./mynodesql.js")
-var fs = require('fs');
+const dbOperations = require("./pos_mysql.js")
 require('dotenv').config();
 
 const TEST_MYSQL_DATABASE = process.env.TEST_MYSQL_DATABASE;
 
-// 如果要重建資料庫就保留這個功能 重建後再備註
-pool.dropDatabase(TEST_MYSQL_DATABASE)
+(async () => {
+  // 如果要重建資料庫就保留這個功能 重建後再備註
+  await dbOperations.dropDatabase(TEST_MYSQL_DATABASE)
 
-// pool.createDatabase("fangs_food_pos_system")
-// pool.useDatabase("fangs_food_pos_system")
-pool.createDatabase(TEST_MYSQL_DATABASE)
-pool.useDatabase(TEST_MYSQL_DATABASE)
+  await dbOperations.createDatabase(TEST_MYSQL_DATABASE)
+  await dbOperations.useDatabase(TEST_MYSQL_DATABASE)
 
-pool.UseMySQL(
-  `CREATE TABLE IF NOT EXISTS users (
+  const tableDefinition = `
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    CategoryName VARCHAR(255) NOT NULL,
+    Description TEXT NULL,
+    sort INT DEFAULT 0
+  `;
+  await dbOperations.createTable('Category', tableDefinition);
+
+  // 傳入分類
+  await dbOperations.UseMySQL(
+    `INSERT INTO Category (CategoryName, sort) VALUES 
+  ('鍋類', 1), 
+  ('肉類', 2), 
+  ('海鮮類', 3), 
+  ('蔬菜類', 4), 
+  ('火鍋餃類', 5)`
+    , "", "傳入 分類 資料")
+
+  const categoryMap = {
+    "hotpot": 1,
+    "meat": 2,
+    "seafood": 3,
+    "vegetable": 4,
+    "dumplings": 5
+  };
+
+  const TablesTableDefinition = `
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    TableNumber INT NOT NULL,
+    TablesStatus ENUM('空桌', '點餐中', '待確認', '製作中', '用餐中', '清潔中') NOT NULL DEFAULT '空桌',
+    MainOrderId VARCHAR(255) NULL
+  `;
+
+  await dbOperations.createTable('Tables', TablesTableDefinition);
+
+  await dbOperations.initTable(20)
+
+  await dbOperations.editTableStatus(1, "空桌")
+  await dbOperations.editTableStatus(2, "點餐中")
+  await dbOperations.editTableStatus(3, "待確認")
+  await dbOperations.editTableStatus(4, "製作中")
+  await dbOperations.editTableStatus(5, "用餐中")
+  await dbOperations.editTableStatus(6, "清潔中")
+
+  // 食物
+  await dbOperations.UseMySQL(
+    `CREATE TABLE IF NOT EXISTS MenuItems (
+      Id INT AUTO_INCREMENT PRIMARY KEY,
+      MenuItemName VARCHAR(255) NOT NULL,
+      CategoryId INT NOT NULL,
+      Price INT NOT NULL,
+      image_url TEXT NULL,
+      Insupply BOOLEAN DEFAULT TRUE,
+      CreateTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      UpdateTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      FOREIGN KEY (CategoryId) REFERENCES Category(Id) ON DELETE CASCADE,
+      sort INT DEFAULT 0);
+    `
+    , "", "建立 MenuItems 資料表")
+
+  const itemData = require("./script/data/fangsFoodData.js")
+  await dbOperations.insertIntoMenuItems(itemData, categoryMap)
+
+  // 主訂單
+  await dbOperations.UseMySQL(
+    `CREATE TABLE IF NOT EXISTS MainOrders (
+      Id INT AUTO_INCREMENT PRIMARY KEY,
+      MainOrderId VARCHAR(255) NOT NULL,
+      SubTotal INT DEFAULT 0,
+      ServiceFee INT DEFAULT 0,
+      Total INT DEFAULT 0,
+      TableId INT NOT NULL,
+      OrderStatus ENUM('未結帳', '已結帳', '已取消') NOT NULL DEFAULT '未結帳',
+      CreateTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      UpdateTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      UserId INT,
+      FOREIGN KEY (TableId) REFERENCES Tables(Id)
+    )`
+    , "", "建立 MainOrders 資料表")
+
+  const MainOrderId = await dbOperations.generateMainOrderId()
+  console.log(`生成新主訂單 ${MainOrderId}`)
+
+  await dbOperations.forTestMakeNewMainOrder(MainOrderId)
+
+  await dbOperations.editMainOrderStatus(MainOrderId, "已結帳")
+  await dbOperations.editMainOrderStatus(MainOrderId, "未結帳")
+  await dbOperations.editMainOrderStatus(MainOrderId, "已取消")
+
+  await dbOperations.UseMySQL(
+    `CREATE TABLE IF NOT EXISTS MainOrderMappings (
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    MainOrderId VARCHAR(255) NOT NULL,
+    MenuItemId INT NOT NULL,
+    quantity INT NOT NULL,
+    unit_price INT NOT NULL,
+    total_price INT NOT NULL,
+    -- FOREIGN KEY (MainOrderId) REFERENCES MainOrders(Id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (MenuItemId) REFERENCES MenuItems(Id) ON DELETE CASCADE ON UPDATE CASCADE);
+  `, "", "建立 主訂單與品項 對照資料表")
+
+  // 子訂單
+  await dbOperations.UseMySQL(
+    `CREATE TABLE IF NOT EXISTS SubOrders (
+      Id INT AUTO_INCREMENT PRIMARY KEY,
+      SubOrderId VARCHAR(255) NOT NULL,
+      MainOrderId VARCHAR(255) NOT NULL,
+      SubTotal INT DEFAULT 0,
+      TableId INT NOT NULL,
+      OrderStatus ENUM('未製作', '製作中', '已完成', '已取消') NOT NULL DEFAULT '未製作',
+      CreateTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      UpdateTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      -- ,FOREIGN KEY (MainOrderId) REFERENCES MainOrders(Id) ON DELETE CASCADE
+    )`
+    , "", "建立 子訂單 資料表")
+
+  const SubOrderId = await dbOperations.generateSubOrderId(MainOrderId)
+  console.log(`生成新子訂單 ${SubOrderId}`)
+
+  // await dbOperations.forTestMakeNewSubOrder(MainOrderId, SubOrderId)
+
+  // await dbOperations.editSubOrderStatus(SubOrderId, "製作中")
+  // await dbOperations.editSubOrderStatus(SubOrderId, "已完成")
+  // await dbOperations.editSubOrderStatus(SubOrderId, "未製作")
+  // await dbOperations.editSubOrderStatus(SubOrderId, "已取消")
+
+  await dbOperations.UseMySQL(
+    `CREATE TABLE IF NOT EXISTS SubOrderMappings (
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    SubOrderId VARCHAR(255) NOT NULL,
+    MenuItemId INT NOT NULL,
+    quantity INT NOT NULL,
+    unit_price INT NOT NULL,
+    total_price INT NOT NULL,
+    -- FOREIGN KEY (SubOrderId) REFERENCES SubOrders(Id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (MenuItemId) REFERENCES MenuItems(Id) ON DELETE CASCADE ON UPDATE CASCADE
+    );
+  `, "", "建立 子訂單與品項 對照資料表")
+
+  const SubOrderInfo = [
+    {
+      "MenuItemId": 1,
+      "quantity": 4,
+    },
+    {
+      "MenuItemId": 2,
+      "quantity": 3,
+    }
+  ]
+
+  await dbOperations.sendSubOrder(SubOrderId, SubOrderInfo)
+
+
+
+  await dbOperations.UseMySQL(
+    `CREATE TABLE IF NOT EXISTS users (
     id int(11) NOT NULL AUTO_INCREMENT,
     name varchar(255) NOT NULL,
     googleID varchar(255) DEFAULT NULL,
@@ -25,208 +177,63 @@ pool.UseMySQL(
     reset_token varchar(255) DEFAULT NULL,
     PRIMARY KEY (id),
     UNIQUE KEY email_unique (email)
-  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;`
-)
+  ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `, "", "建立 三方登入用 資料表")
 
-pool.UseMySQL(
-  `ALTER TABLE users MODIFY id int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=0;`
-)
+  //監控 
+  await dbOperations.UseMySQL(
+    `CREATE TABLE table_operations_log (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    table_name VARCHAR(64) NOT NULL,
+    operation ENUM('INSERT', 'UPDATE', 'DELETE') NOT NULL,
+    operation_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    user VARCHAR(64) DEFAULT NULL,
+    record_id VARCHAR(255) DEFAULT NULL,
+    before_value TEXT,
+    after_value TEXT,
+    PRIMARY KEY (id)
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+  `, "", "建立 log 資料表")
 
-// pool.UseMySQL(`
-//   CREATE TABLE IF NOT EXISTS Tables (
-//   TableId INT AUTO_INCREMENT PRIMARY KEY,
-//   TableName VARCHAR(50) NOT NULL,
-//   Status VARCHAR(20) NOT NULL DEFAULT 'AVAILABLE'
-//   );`
-// )
-
-
-// pool.UseMySQL(
-//   `CREATE TABLE IF NOT EXISTS Categories (
-//     CategoryId INT AUTO_INCREMENT PRIMARY KEY,
-//     CategoryName VARCHAR(255) NOT NULL,
-//     Description TEXT)`
-// )
-
-// const CategoryTable = {
-//   CategoryName: "Name",
-//   CategoryDescription: "CategoryDescription"
-// };
-
-// pool.UseMySQL(
-//   `INSERT INTO Categories
-//     (CategoryName, Description)
-//     VALUES (?, ?)`,
-//   [CategoryTable.CategoryName,
-//   CategoryTable.CategoryDescription])
+  // await dbOperations.processGeneratedOrders().then(() => {
+  //   console.log('所有訂單已處理完畢');
+  // }).catch(error => {
+  //   console.error('處理訂單過程中發生錯誤:', error);
+  // });
 
 
-// 分類
-pool.UseMySQL(
-  `CREATE TABLE IF NOT EXISTS foods_category (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    category VARCHAR(255) NOT NULL,
-    sort INT DEFAULT 0)`
-)
-
-const categoryMap = {
-  "hotpot": 1,
-  "meat": 2,
-  "seafood": 3,
-  "vegetable": 4,
-  "dumplings": 5
-};
-
-// 傳入分類
-pool.UseMySQL(
-  `INSERT INTO foods_category (category, sort) VALUES 
-  ('鍋類', 1), 
-  ('肉類', 2), 
-  ('海鮮類', 3), 
-  ('蔬菜類', 4), 
-  ('火鍋餃類', 5)`
-);
-
-// 食物
-pool.UseMySQL(
-  `CREATE TABLE IF NOT EXISTS foods (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    category_id INT NOT NULL,
-    price INT NOT NULL,
-    image_url TEXT NULL,
-    deleted_at TIMESTAMP NULL,
-  sort INT DEFAULT 0)`
-)
-
-const itemData = require("./script/data/fangsFoodData.js")
-pool.insertProjectDataList(itemData, categoryMap)
-
-// pool.UseMySQL(
-//   `CREATE TABLE IF NOT EXISTS MenuItems (
-//     MenuItemId INT AUTO_INCREMENT PRIMARY KEY,
-//     Name VARCHAR(255) NOT NULL,
-//     Description TEXT,
-//     Price DECIMAL(10, 2) NOT NULL,
-//     CategoryId INT,
-//     Insupply BOOLEAN DEFAULT TRUE,
-//     CreateTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-//     UpdateTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-//     FOREIGN KEY (CategoryId) REFERENCES Categories(CategoryId))`
-// )
-// // console.log("MenuItems")
-
-// const Items = {
-//   MenuItemId: 20,
-//   Name: "Name",
-//   Description: "Description",
-//   Price: 0.33,
-//   CategoryId: 2,
-//   Insupply: true
-// };
-
-// // pool.insertIntoMenuItems(Items)
-// pool.updateMenuItems(Items)
-
-// // 表名稱 列名稱 列值
-// pool.updateFromTable(
-//   'MenuItems', // 表名
-//   { // 要更新的列及其新值
-//     Name: "Updated Name",
-//     Description: "Updated Description",
-//     Price: 0.33,
-//     CategoryId: 2,
-//     Insupply: true
-//   },
-//   'MenuItemId', // 更新条件
-//   8 // 条件匹配值
-// );
-
-// pool.deleteFromTable("MenuItems", "MenuItemId", 9)
-// pool.selectFromTable("MenuItemId, Name, Description, Price, CategoryId, InSupply", "MenuItems")
-
-// 訂單
-pool.UseMySQL(
-  `CREATE TABLE IF NOT EXISTS table_orders (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  trade_no VARCHAR(255) NOT NULL,
-  food_price INT NULL,
-  service_fee INT NULL,
-  trade_amt INT NULL,
-  table_number INT NOT NULL,
-  order_status TINYINT DEFAULT 1,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  payment_at TIMESTAMP NULL)`
-)
-
-const orders = require("./generateOrders.js")
-let i = 1;
-orders.forEach(order => {
-  pool.UseMySQL(
-    `INSERT INTO table_orders (trade_no, food_price, service_fee, trade_amt, table_number, order_status, created_at, payment_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-    [order.trade_no, order.food_price, order.service_fee, order.trade_amt, order.table_number, order.order_status, order.created_at, order.payment_at],
-    `插入第${i}筆訂單 ${order.trade_no}到foods表`
-  );
-  i++
-});
 
 
-// 訂單品項對照表
-pool.UseMySQL(
-  ` CREATE TABLE IF NOT EXISTS orders_items (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    order_id INT NOT NULL,
-    food_id INT NOT NULL,
-    quantity INT NOT NULL,
-    unit_price INT NOT NULL,
-    total_price INT NOT NULL)`
-)
+  // // 查询过去一个月内按品项的销售信息
+  // await dbOperations.getBackEndData('lastMonth', 'byItem')
+  //   .then(console.log)
+  //   .catch(console.error);
 
-// // LOG
-// pool.UseMySQL(
-//   `CREATE TABLE IF NOT EXISTS action_log (
-//     id INT AUTO_INCREMENT PRIMARY KEY,
-//     name VARCHAR(255) NOT NULL UNIQUE,
-//     Description TEXT,
-//     executed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);`
-// )
+  // // 查询过去一周内按分类每天的销售信息
+  // // 注意：这里需要根据实际情况提供SQL语句的具体实现
+  // await dbOperations.getBackEndData('lastWeek', 'byCategory')
+  //   .then(console.log)
+  //   .catch(console.error);
 
+  // // 查询所有时间内每月的总销售信息（全部订单）
+  // // 注意：这里需要根据实际情况提供SQL语句的具体实现
+  // await dbOperations.getBackEndData('all', 'all')
+  //   .then(console.log)
+  //   .catch(console.error);
 
-// pool.UseMySQL(
+  dbOperations.closeConnection()
+})()
+
+// await dbOperations.UseMySQL(
 //   `CREATE TABLE IF NOT EXISTS Roles (
 //     Role VARCHAR(50),
 //     RoleId INT AUTO_INCREMENT PRIMARY KEY,
 //     ValidUntil TIMESTAMP
 //   );`)
 
-// pool.UseMySQL(
+// await dbOperations.UseMySQL(
 //   `CREATE TABLE IF NOT EXISTS Pages (
 //     PageId INT AUTO_INCREMENT PRIMARY KEY,
 //     PageName VARCHAR(255) NOT NULL,
 //     RoleRequired VARCHAR(50) NOT NULL
 //   );`)
-
-// pool.UseMySQL(
-//   `CREATE TABLE IF NOT EXISTS Orders (
-//     OrderId INT AUTO_INCREMENT PRIMARY KEY,
-//     TableId INT,
-//     TotalPrice DECIMAL(10, 2) NOT NULL,
-//     Status INT NOT NULL,
-//     OrderDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-//     UpdateTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-//     UserId INT,
-//   );`)
-
-// pool.UseMySQL(
-//   `CREATE TABLE IF NOT EXISTS OrderItemMappings (
-//     OrderId INT,
-//     OrderItemId INT,
-//     FOREIGN KEY (OrderId) REFERENCES Orders(OrderId),
-//     FOREIGN KEY (OrderItemId) REFERENCES OrderItems(OrderItemId)
-//   );`)
-
-// pool.dropDatabase("test")
-
-pool.closeConnection()
-
-module.exports = pool

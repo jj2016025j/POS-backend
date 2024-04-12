@@ -8,14 +8,9 @@ dotenv.config();
 
 const { printInvoice, convertToInvoiceFormat } = require('../printer');
 const { TimeFormat } = require('../timeFormatted.js')
-const mysql = require('mysql2/promise');
-const dataRep = require('../data_repository');
+const dbOperations = require('../../pos_mysql');
 
 const {
-    MYSQL_HOST,
-    MYSQL_USER,
-    MYSQL_PASSWORD,
-    MYSQL_DATABASE,
     LINEPAY_CHANNEL_ID,
     LINEPAY_RETURN_HOST,
     LINEPAY_SITE,
@@ -27,17 +22,10 @@ const {
 
 // console.log(LINEPAY_CHANNEL_ID, LINEPAY_RETURN_HOST, LINEPAY_SITE, LINEPAY_VERSION, LINEPAY_CHANNEL_SECRET_KEY, LINEPAY_RETURN_CONFIRM_URL, LINEPAY_RETURN_CANCEL_URL)
 // 数据库连接配置
-const pool = mysql.createPool({
-    host: MYSQL_HOST, // 資料庫伺服器地址
-    user: MYSQL_USER, // 資料庫用戶名
-    password: MYSQL_PASSWORD, // 資料庫密碼
-    database: MYSQL_DATABASE, // 要操作的数据库名 庫名不一定要
-    charset: "utf8mb4", // 確保使用 utf8mb4
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
-});
-
+let pool
+(async () => {
+    pool = await dbOperations.getConnection()
+})
 //現金結帳
 router.post('/cash/:order_id', async (req, res) => {
     const orderId = req.params['order_id']
@@ -87,7 +75,7 @@ router.post('/cash/:order_id', async (req, res) => {
         };
         // console.log(invoiceData)
 
-        await dataRep.confirmPaymentByCash(orderId)
+        await dbOperations.confirmPaymentByCash(orderId)
         // // console.log(orderId)
         try {
             printInvoice(invoiceData)
@@ -213,9 +201,8 @@ router.get("/success/:orderId", async (req, res) => {
         `SELECT id, trade_no, trade_amt FROM table_orders WHERE trade_no = ?`,
         [orderId]
     );
-    // console.log(orders);
-    // console.log(orders.id);
-    await dataRep.confirmPaymentByCash(orders[0].id);
+
+    await dbOperations.confirmPaymentByCash(orders[0].id);
     res.redirect("/pos");
 });
 
@@ -224,21 +211,88 @@ router.post('/creditcard/:order_id', async (req, res) => {
     // const orderId = req.params['trade_no']
     const orderId = req.params['order_id']
 
-    await dataRep.confirmPaymentByCash(orderId)
+    await dbOperations.confirmPaymentByCash(orderId)
 
     res.json(orderId);
 })
 
 // 一鍵結帳全部
 // http://localhost:5000/pay/checkout
-router.post('/checkout', async (req, res) => {
-    // try {
-    var results = await dataRep.OneClickCheckoutAll();
-    return res.status(200).json(results);
-    // } catch (error) {
-    //     console.error(error);
-    //     return res.status(500).json({ message: "Internal server error" });
-    // }
+router.put('/checkoutAll', async (req, res) => {
+    try {
+        var results = await dbOperations.checkOutALL();
+        return res.status(200).json(results);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+});
+
+router.post('/checkout/:mainOrderId', async (req, res) => {
+    // 確認付款 UNDO 應該要改成function
+    // http://localhost:8080/pay/checkout/ORD-1709679600000-3
+    try {
+        const MainOrderId = req.params['mainOrderId'];
+        const MainOrderInfo = await dbOperations.getMainOrderInfoById(MainOrderId);
+        console.log(MainOrderInfo)
+        if (!MainOrderInfo) {
+            return res.status(500).json({
+                message: '此訂單不存在',
+                MainOrderInfo: MainOrderInfo
+            });
+
+        } else if (MainOrderInfo.OrderStatus != "未結帳") {
+            return res.status(500).json({
+                message: `訂單 ${MainOrderId} 已結帳`,
+                MainOrderInfo: MainOrderInfo
+            });
+        } else {
+            const TableId = await dbOperations.getTableIdByMainOrderId(MainOrderId)
+            console.log(TableId)
+            await dbOperations.editTableInfo(TableId, "清潔中", MainOrderId)
+            const results = await dbOperations.editMainOrderStatus(MainOrderId, "已結帳")
+            console.log(results)
+            if (results) {
+                return res.json({
+                    message: `訂單 ${MainOrderId} 已完成結帳`
+                });
+            } else {
+                return res.status(501).json({
+                    message: `伺服器發生錯誤`
+                });
+            }
+        }
+
+    } catch {
+        return res.status(501).json({
+            message: `伺服器發生錯誤`
+        });
+    }
+});
+
+router.get('/cancelCheckout/:mainOrderId', async (req, res) => {
+    // 取消付款
+    // http://localhost:8080/pos/cancelCheckout/ORD-1709679600000-3
+    const MainOrderId = req.params['mainOrderId'];
+    const MainOrderInfo = await dbOperations.getMainOrderInfoById(MainOrderId);
+    if (!MainOrderInfo || MainOrderInfo.OrderStatus != "已結帳") {
+        return res.status(200).json({
+            message: `此訂單 ${MainOrderId} 還未結帳！`,
+            MainOrderInfo: MainOrderInfo
+        });
+    } else {
+        const results = await dbOperations.editMainOrderStatus(MainOrderId, "未結帳")
+        if (results) {
+            return res.json({
+                message: `訂單 ${MainOrderId} 已修改為未結帳`,
+                MainOrderInfo: await dbOperations.getMainOrderInfoById(MainOrderId)
+            });
+        } else {
+            return res.status(500).json({
+                message: `伺服器發生錯誤`
+            });
+        }
+    }
 });
 
 function createLinePayBody(order) {
@@ -272,38 +326,3 @@ function createSignature(uri, linePayBody) {
 }
 
 module.exports = router;
-
-
-
-// // 結帳
-// router.post('/pay', (req, res) => {
-//     const { orderId, paymentMethod, amount } = req.body;
-//     const receiptId = `receipt${Object.keys(orders).length + 1}`;
-//     const receipt = {
-//         receiptId,
-//         amount,
-//         paymentMethod,
-//         status: "已支付"
-//     };
-//     orders[orderId].receipt = receipt;
-//     // 返回支付成功或失敗
-//     res.json({ success: true, message: "支付成功", receipt });
-// });
-
-// // 發票開具 X
-// router.post('/invoice', (req, res) => {
-//     const { orderId, receiptId, invoiceType, carrier } = req.body;
-//     const invoiceId = `invoice${Object.keys(orders).length + 1}`;
-//     const invoice = {
-//         invoiceId,
-//         orderId,
-//         receiptId,
-//         invoiceType,
-//         carrier,
-//         status: "已開具"
-//     };
-//     if (orders[orderId]) orders[orderId].invoice = invoice;
-//     const isSuccess = printInvoice(invoiceData);
-
-//     res.json({ success: isSuccess, message: "發票已開具", invoice });
-// });

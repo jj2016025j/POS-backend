@@ -1,124 +1,180 @@
 const express = require('express');
 const router = express.Router();
-const dataRep = require('../data_repository');
-const { printOrder, printOrderWithQR } = require('../printer');
-const { TimeFormat } = require('../timeFormatted.js')
-const mysql = require('mysql2/promise');
+const dbOperations = require('../../pos_mysql');
 
-// 数据库连接配置
-const pool = mysql.createPool({
-    host: "localhost",
-    user: "root",
-    password: "",
-    database: "fang_project",
-    charset: "utf8mb4",
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
-});
+const { printOrder, printOrderWithQR } = require('../printer');
 
 const getIp = require("../getIPAddress.js")
 const LocalIP = getIp.getLocalIPAddress()
 
-//新增訂單
-// http://localhost:3000/order
-router.post('/', async (req, res) => {
-    let formData = req.body;
-    const tableNum = formData.seatID
-
+router.post('/new-order', async (req, res) => {
+    // 新增訂單
+    // http://localhost:8080/order/new-order/13
+    const { TableNumber } = req.body;
     try {
-        var result = await dataRep.addTableOrder(tableNum)
-        // console.log(result.insertId)
-        var orders = await dataRep.getPendingTableOrders();
-        const obj = await dataRep.getTradeNoById(result.insertId)
-        const trade_no = obj.trade_no
-        const order_id = result.insertId
+        const MainOrderId = await dbOperations.generateMainOrderId()
+        let tableInfo = await dbOperations.getTableInfoBytableNumber(TableNumber)
+        console.log(tableInfo)
+        if (tableInfo.TablesStatus != "空桌")
+            return res.status(500).json({ message: "此桌目前已有訂單" });
+        await dbOperations.makeNewMainOrder(MainOrderId, TableNumber)
+        await dbOperations.editTableInfo(TableNumber, "點餐中", MainOrderId)
+        tableInfo = await dbOperations.getTableInfoByMainOrderId(MainOrderId)
+        console.log(tableInfo)
+
         const protocol = req.protocol; // 'http' 或 'https'
-        const host = req.get('host'); // 'localhost:3000', 'example.com' 等
-        const url = req.originalUrl; // 请求的路径和查询字符串 '/some-path?query=value'
-        // const fullUrl = `${protocol}://${host}${url}/${trade_no}`;
-        const fullUrl = `${protocol}://${LocalIP}:3000/pos/phone/${trade_no}`;
-        // console.log(fullUrl);
+        const fullUrl = `${protocol}://${LocalIP}:8080/pos/phone/${MainOrderId}`;
+        console.log(`建立QRCODE :${fullUrl}`);
         try {
-            printOrderWithQR(fullUrl, order_id, tableNum)
+            await printOrderWithQR(fullUrl, MainOrderId, TableNumber)
         } catch (e) {
-            // console.log(e)
+            console.log("打印機未啟動或發生錯誤 :", e)
         }
-        return res.status(200).json(orders);
+        console.log(`回傳 tableInfo :${tableInfo}`);
+        return res.status(200).json(tableInfo);
     } catch (e) {
-        // console.log(e)
-        return res.status(400).json({
+        console.log(e)
+        return res.status(500).json({
             error: e
         });
     }
 });
 
-//送出訂單
-// http://localhost:3000/order/12
-router.post('/:order_id', async (req, res) => {
-    let formData = req.body;
-    const orderId = req.params['order_id']
-    await dataRep.appendOrderFoods(orderId, formData)
-    await dataRep.calculateOrder(orderId)
-    // try {
-    const [orders] = await pool.query(
-        `SELECT id, trade_no, food_price, service_fee, trade_amt, created_at FROM table_orders WHERE id = ?`,
-        [orderId]
-    );
-    if (orders.length === 0) {
-        return res.send('Order not found');
-    }
-
-    const orderInfo = orders[0];
-    // console.log("orderInfo", orderInfo)
-
-    const [orderItems] = await pool.query(
-        `SELECT od.food_id, od.quantity, od.unit_price, f.name 
-                FROM orders_items od 
-                JOIN foods f ON od.food_id = f.id 
-                WHERE od.order_id = ?`,
-        [orderInfo.id]
-    );
-    // console.log("orderItems",orderItems)
-
-    const formattedDate = TimeFormat(orderInfo.created_at)
-    // console.log("formattedDate",formattedDate); // 輸出格式可能與上面略有不同，依瀏覽器和地區設定而定
-
-    const orderData = {
-        orderNumber: orderId,
-        orderDate: formattedDate,
-        items: orderItems.map(item => ({
-            name: item.name,
-            quantity: item.quantity,
-            unitPrice: item.unit_price,
-            totalPrice: item.quantity * item.unit_price
-        })),
-        subTotal: orderInfo.food_price,
-        tax: orderInfo.service_fee,
-        total: orderInfo.trade_amt,
-        // specialRequests: '牛肉片請分開盛裝。'
-    };
+router.post('/printQRcode', async (req, res) => {
+    // http://localhost:8080/order/printQRcode
+    const { MainOrderId, TableNumber } = req.body;
+    const protocol = req.protocol; // 'http' 或 'https'
+    const fullUrl = `${protocol}://${LocalIP}:3000/phoneorder/${MainOrderId}`;
+    console.log(`建立QRCODE :${fullUrl}`);
     try {
-        printOrder(orderData)
+        await printOrderWithQR(fullUrl, MainOrderId, TableNumber);
+        res.json({ message: "有打印，不知道有沒有成功" }); // 使用res.json发送JSON响应
     } catch (e) {
-        // console.log(e)
+        console.log("打印機未啟動或發生錯誤 :", e);
+        res.status(500).json({ message: "打印失敗" }); // 发送带有500状态码的JSON响应
     }
-    return res.status(200).send(true);
-    // } catch (e) {
-    //     return res.status(400).json({
-    //         error: e
-    //     });
-    // }
+});
+
+router.get('/getAllTableStatus', async (req, res) => {
+    // 取得所有桌號狀態(首頁)
+    // http://localhost:8080/order/getAllTableStatus
+    console.log("取得所有桌號狀態")
+    var AllTableStatus = await dbOperations.getAllTableStatus();
+    console.log("取得所有桌號狀態 : ", AllTableStatus)
+    return res.json(AllTableStatus);
+});
+
+router.get('/getMainOrder/:mainOrderId', async (req, res) => {
+    // 取得訂單資訊(結帳用)
+    // http://localhost:8080/order/getMainOrder/ORD1711905767022v0wzjnty398
+    const MainOrderId = req.params['mainOrderId']
+    var MainOrderInfo = await dbOperations.getMainOrderInfoById(MainOrderId)
+    return res.json(MainOrderInfo);
+});
+
+router.get('/getrecentorders', async (req, res) => {
+    // 取得最近50筆訂單資訊(訂單歷史)
+    // http://localhost:8080/order/getrecentorders
+    try {
+        const recentOrders = await dbOperations.getOrders()
+        res.json(recentOrders);
+    } catch (error) {
+        console.error('Failed to fetch recent orders:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+});
+
+router.post('/addSubOrder/:mainOrderId', async (req, res) => {
+    // 新增子訂單
+    const MainOrderId = req.params['mainOrderId']
+    try {
+        const SubOrderId = await dbOperations.MakeNewSubOrder(MainOrderId)
+        console.log(SubOrderId)
+        res.json({ SubOrderId });
+    } catch (error) {
+        console.error('Failed to fetch add suborder:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+})
+
+router.post('/SubOrder/:SubOrderId', async (req, res) => {
+    //送出訂單
+    // http://localhost:8080/order/SubOrder/12
+    const SubOrderInfo = req.body;
+    const { SubOrderId } = req.params;
+
+    // 验证请求体中的SubOrderId是否与URL参数中的SubOrderId相匹配
+    if (SubOrderInfo.SubOrderId !== SubOrderId) {
+        return res.status(400).json({ error: "SubOrder ID mismatch." });
+    }
+
+    try {
+        // 假设 sendSubOrder 是一个异步函数
+        await dbOperations.sendSubOrder(SubOrderId, SubOrderInfo);
+
+        // 构造SubOrderData
+        const SubOrderData = {
+            SubOrderId: SubOrderId,
+            MenuItems: SubOrderInfo.items.map(item => ({
+                MenuItemName: item.menuItemName,
+                quantity: item.quantity,
+                unit_price: item.price,
+                total_price: item.quantity * item.price
+            })),
+            subTotal: SubOrderInfo.food_price,
+            tax: SubOrderInfo.service_fee,
+            total: SubOrderInfo.trade_amt,
+        };
+
+        // 尝试打印订单，printOrder 也假设是一个异步操作
+        try {
+            await printOrder(SubOrderData);
+        } catch (printError) {
+            console.error(printError);
+            // 即使打印失败，也决定继续响应成功（这取决于您的业务逻辑是否需要这样处理）
+        }
+
+        // 订单处理成功，返回成功响应
+        return res.status(200).json({ success: true, message: "SubOrder processed successfully." });
+    } catch (error) {
+        console.error(error);
+        // 数据库操作失败，返回错误响应
+        return res.status(500).json({ error: "Failed to process SubOrder." });
+    }
+});
+router.post('/clean-table', async (req, res) => {
+    const { TableNumber, TablesStatus } = req.body;
+    try {
+        // 先获取当前桌子的信息
+        let tableInfo = await dbOperations.getTableInfoBytableNumber(TableNumber);
+        if (!tableInfo) {
+            return res.status(404).json({ message: "找不到指定桌號的資訊" });
+        }
+
+        // 更新桌子状态
+        await dbOperations.editTableInfo(TableNumber, TablesStatus, "");
+
+        // 再次获取更新后的桌子信息
+        tableInfo = await dbOperations.getTableInfoBytableNumber(TableNumber);
+        console.log(`桌號 ${TableNumber} 更新狀態為 ${TablesStatus} 成功。`);
+
+        return res.status(200).json(tableInfo);
+    } catch (e) {
+        console.error(`更新桌號 ${TableNumber} 狀態失敗:`, e);
+        return res.status(500).json({
+            error: "服務器錯誤，更新桌子狀態失敗"
+        });
+    }
 });
 
 //刪除訂單品項
-router.delete('/foods/:order_id/:food_id', async (req, res) => {
-    const order_id = req.params['order_id']
-    const food_id = req.params['food_id']
+router.delete('/foods/:subOrderId/:menuItemId', async (req, res) => {
+    const SubOrderId = req.params['subOrderId']
+    const MenuItemId = req.params['menuItemId']
 
     try {
-        var result = await dataRep.deleteOrderFood(order_id, food_id)
-        // console.log('delete result', result)
+        var result = await dbOperations.deleteMenuItemFromSubOrder(SubOrderId, MenuItemId)
+        console.log('UNDO這裡返回結果', result)
         return res.status(200).json(true);
     } catch (e) {
         return res.status(400).json({
@@ -127,15 +183,14 @@ router.delete('/foods/:order_id/:food_id', async (req, res) => {
     }
 });
 
-// 取得訂單產品
-// http://localhost:3000/order/list/12
-router.get('/list/:order_id', async (req, res) => {
-    const orderId = req.params['order_id']
-    // console.log('foods')
+// 取得訂單資訊
+// http://localhost:8080/mainOrderId
+router.get('/getMainOrderInfo/:mainOrderId', async (req, res) => {
+    const MainOrderId = req.params['mainOrderId']
     try {
-        var foods = await dataRep.getOrderFoods(orderId)
-        // console.log('foods', foods)
-        return res.status(200).json(foods);
+        var MainOrder = await dbOperations.getMainOrderInfo(MainOrderId)
+        console.log('MainOrder :', MainOrder)
+        return res.status(200).json(MainOrder);
     } catch (e) {
         return res.status(400).json({
             error: e
@@ -143,10 +198,33 @@ router.get('/list/:order_id', async (req, res) => {
     }
 });
 
+// 取得訂單資訊
+// http://localhost:8080/subOrderId
+router.get('/getSubOrderInfo/:subOrderId', async (req, res) => {
+    const SubOrderId = req.params['subOrderId']
+    try {
+        var SubOrder = await dbOperations.getSubOrderInfo(SubOrderId)
+        console.log('SubOrder :', SubOrder)
+        return res.status(200).json(SubOrder);
+    } catch (e) {
+        return res.status(400).json({
+            error: e
+        });
+    }
+});
+router.get('/getMainAndSubOrder/:mainOrderId', async (req, res) => {
+    try {
+        const mainOrderId = req.params.mainOrderId;
+        const result = await dbOperations.getMainAndSubOrder(mainOrderId);
+        console.log(result)
+        res.json(result);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send(error.message);
+    }
+});
 module.exports = router;
 
-// 假設 orders 和 dishes 是從某處獲得的數據，這裡為了簡化直接定義了
-// 實際應用中，這些數據應該從數據庫或其他數據源動態獲取
 const orders = {};
 
 const dishes = [
@@ -216,7 +294,7 @@ const sub_order = [
 // // 修改主訂單
 // router.post('/modify-master-order', (req, res) => {
 //     // 傳入參數 桌號 修改內容(狀態 已結帳 已取消 未結帳{用餐中})
-//     // 
+//     //
 //     const { userId, items, tableNumber } = req.body;
 //     // 返回修改成功或失敗 訂單ID
 //     res.json({
