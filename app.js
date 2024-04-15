@@ -2,12 +2,11 @@ const dotenv = require("dotenv");
 dotenv.config();
 const express = require('express');
 const cors = require('cors');
-const dbOperations = require('./pos_mysql');
 const bodyParser = require('body-parser')
-require("./script/passport");
-const passport = require("passport");
-const session = require("express-session");
-const flash = require("connect-flash");
+// require("./script/passport");
+// const passport = require("passport");
+// const session = require("express-session");
+// const flash = require("connect-flash");
 const path = require('path');
 const { getLocalIPAddress, getNetIPAddress, getPublicIP } = require('./script/getIPAddress.js');
 
@@ -23,23 +22,23 @@ app.set("view engine", "ejs");
 app.use(express.static("public"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(
-    session({
-        secret: process.env.SESSION_SECRET,
-        resave: false,
-        saveUninitialized: false,
-        cookie: { secure: false },
-    })
-);
-app.use(passport.initialize());
-app.use(passport.session());
-app.use(flash());
-app.use((req, res, next) => {
-    res.locals.success_msg = req.flash("success_msg");
-    res.locals.error_msg = req.flash("error_msg");
-    res.locals.error = req.flash("error");
-    next();
-});
+// app.use(
+//     session({
+//         secret: process.env.SESSION_SECRET,
+//         resave: false,
+//         saveUninitialized: false,
+//         cookie: { secure: false },
+//     })
+// );
+// app.use(passport.initialize());
+// app.use(passport.session());
+// app.use(flash());
+// app.use((req, res, next) => {
+//     res.locals.success_msg = req.flash("success_msg");
+//     res.locals.error_msg = req.flash("error_msg");
+//     res.locals.error = req.flash("error");
+//     next();
+// });
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.set('view engine', 'ejs');
