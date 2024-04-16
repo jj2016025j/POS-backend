@@ -16,7 +16,7 @@ app.use(cors({
     origin: 'http://localhost:3000'
 }));
 
-const port = 8080;
+const port = 8000;
 //設定middleware跟排版引擎
 app.set("view engine", "ejs");
 app.use(express.static("public"));

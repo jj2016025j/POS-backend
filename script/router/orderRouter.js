@@ -58,10 +58,14 @@ router.post('/printQRcode', async (req, res) => {
 router.get('/getAllTableStatus', async (req, res) => {
     // 取得所有桌號狀態(首頁)
     // http://localhost:8080/order/getAllTableStatus
-    console.log("取得所有桌號狀態")
-    var AllTableStatus = await dbOperations.getAllTableStatus();
-    console.log("取得所有桌號狀態 : ", AllTableStatus)
-    return res.json(AllTableStatus);
+    try {
+        console.log("取得所有桌號狀態")
+        var AllTableStatus = await dbOperations.getAllTableStatus();
+        console.log("取得所有桌號狀態 : ", AllTableStatus)
+        return res.json(AllTableStatus);
+        } catch (e) {
+        res.status(500).json({ message: "取得所有桌號狀態失敗" }); // 发送带有500状态码的JSON响应
+    }
 });
 
 router.get('/getMainOrder/:mainOrderId', async (req, res) => {
