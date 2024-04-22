@@ -104,27 +104,27 @@ router.post('/addSubOrder/:mainOrderId', async (req, res) => {
 router.post('/SubOrder/:SubOrderId', async (req, res) => {
     //送出訂單
     // http://localhost:8080/order/SubOrder/12
-    const SubOrderInfo = req.body.SubOrderInfo;
+    const SubOrder = req.body.subOrder;
     const { SubOrderId } = req.params;
-    console.log('SubOrderInfo', SubOrderInfo)
+    console.log('SubOrder', SubOrder)
     console.log('SubOrderId', SubOrderId)
 
     try {
         // 假设 sendSubOrder 是一个异步函数
-        await dbOperations.sendSubOrder(SubOrderId, SubOrderInfo);
+        await dbOperations.sendSubOrder(SubOrderId, SubOrder);
 
         // 构造SubOrderData
         const SubOrderData = {
             SubOrderId: SubOrderId,
-            MenuItems: SubOrderInfo.items.map(item => ({
+            MenuItems: SubOrder.items.map(item => ({
                 MenuItemName: item.menuItemName,
                 quantity: item.quantity,
                 unit_price: item.price,
                 total_price: item.quantity * item.price
             })),
-            subTotal: SubOrderInfo.food_price,
-            tax: SubOrderInfo.service_fee,
-            total: SubOrderInfo.trade_amt,
+            subTotal: SubOrder.food_price,
+            tax: SubOrder.service_fee,
+            total: SubOrder.trade_amt,
         };
 
         // 尝试打印订单，printOrder 也假设是一个异步操作
