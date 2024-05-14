@@ -43,6 +43,10 @@ node initDB
 ```bash
 npm start
 ```
+-也可以點擊 mysql_and_server_start.bat 自動開啟後端伺服器以及資料庫
+-或是先點擊 mysql_start.bat 啟動資料庫 然後點擊 server_start.bat 來啟用後端伺服器
+-如果使用過 mysql_start.bat 後關閉視窗，並不會自動關閉資料庫，可以點擊 mysql_close.bat 來關閉資料庫
+-如果使用過 mysql_start.bat 後關閉視窗，下次再使用 mysql_start.bat 時會報錯，要先點擊 mysql_close.bat 來關閉資料庫才會不報錯，不過並不會影響資料庫的執行
 
 ## **使用說明**
 
