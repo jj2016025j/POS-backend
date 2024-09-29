@@ -73,8 +73,7 @@ app.use('/data', dataRouter);
         const publicIP = await getPublicIP(); // 等待公網 IP 地址的 Promise 解析
 
         app.listen(port, () => {
-            console.log(`官方網站: http://localhost:${port}`);
-            // console.log(`pos系統: http://localhost:${port}/pos`);
+            console.log(`測試: http://localhost:${port}`);
             console.log(`局域網 IPv4 地址:  http://${localIP}:${port}`);
             // if (publicIPOld) {
             //     // // console.log(`公網 IPv4 地址:  http://${publicIPOld}:${port}`);
