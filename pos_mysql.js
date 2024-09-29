@@ -112,10 +112,12 @@ const dbOperations = {
    * @param {*} categoryId 
    * @param {*} index 
    */
-  async insertIntoMenuItem(menuItem, categoryId, index) {
+  async insertIntoMenuItem({ MenuItemName, Price, CategoryId, Index }) {
     const sql = "INSERT INTO MenuItems (MenuItemName, CategoryId, Price, image_url) VALUES (?, ?, ?, ?)";
-    const values = [menuItem.MenuItemName, categoryId, menuItem.Price, `/image/product/jpg_${index}.jpg`];
-    await dbOperations.UseMySQL(sql, values, `插入 ${menuItem.MenuItemName}`);
+    const imageUrl = `/image/product/jpg_${Index}.jpg`;
+    const values = [MenuItemName, CategoryId, Price, imageUrl];
+    await pool.query(sql, values);
+    console.log(`插入 ${menuItem.MenuItemName}`);
   },
 
   async insertIntoMenuItems(MenuItemsData, categoryMap) {
@@ -126,6 +128,7 @@ const dbOperations = {
       i++;
     }
   },
+
   async getMenuItemInfo(Id) {
     // 取得選單項目信息
     console.log(`取得 品項 ${Id} 資訊`);

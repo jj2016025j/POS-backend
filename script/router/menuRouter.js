@@ -42,12 +42,17 @@ router.post('/', async (req, res) => {
 
 
 // 修改菜單項目
-// http://localhost:8080/:menuitemId
+// http://localhost:8080/menu/:menuitemId
 router.put('/:menuitemId', async (req, res) => {
-    const Item = req.body
+    const { menuitemId } = req.params; // 从 URL 获取菜单项ID
+    const itemUpdates = req.body
     try {
-        const results = await dbOperations.updateMenuItem(Item)
-        res.status(201).send("更新資料成功，影響的行數：" + results.affectedRows);
+        const results = await dbOperations.updateMenuItem(menuitemId, itemUpdates);
+        if (results.affectedRows === 0) {
+            res.status(404).send("未找到需要更新的记录");
+        } else {
+            res.status(200).send("更新資料成功，影響的行數：" + results.affectedRows);
+        }
     } catch (error) {
         console.error(error);
         res.status(500).send('Server error');
