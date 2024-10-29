@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const dbOperations = require('../../pos_mysql');
-
+const dbOperations = require('../database/dbOperations');
 
 router.get("/:menuItemId", async function (req, res) {
     // 取得某個品項
@@ -73,12 +72,3 @@ router.delete('/:menuitemId', async (req, res) => {
 });
 
 module.exports = router;
-
-const Items = {
-    MenuItemId: 20,
-    Name: "Name",
-    Description: "Description",
-    Price: 0.33,
-    CategoryId: 2,
-    Insupply: true,
-};

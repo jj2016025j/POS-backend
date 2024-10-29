@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const dbOperations = require('../../pos_mysql');
+const dbOperations = require('../database/dbOperations');
 const dayjs = require('dayjs');
 
 router.use(express.json());

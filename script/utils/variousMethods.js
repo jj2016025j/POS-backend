@@ -65,7 +65,7 @@ const variousMethods = {
         return orders;
     },
     getGeneratedOrders() {
-        const menuItemsData = require("./script/data/fangsFoodData.js")
+        const menuItemsData = require("../data/fangsFoodData.js")
 
         // Usage
         const itemQuantityRange = { min: 1, max: 3 };

@@ -1,15 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const dbOperations = require('../../pos_mysql');
-
+const dbOperations = require('../database/dbOperations');
 const { printOrder, printOrderWithQR } = require('../printer');
-
 const getIp = require("../getIPAddress.js")
+
 const LocalIP = getIp.getLocalIPAddress()
 
 router.post('/new-order', async (req, res) => {
     // 新增訂單
-    // http://localhost:8080/order/new-order/13
+    // http://localhost:8080/order/new-order
     const { TableNumber } = req.body;
     try {
         const MainOrderId = await dbOperations.generateMainOrderId()
@@ -63,7 +62,7 @@ router.get('/getAllTableStatus', async (req, res) => {
         var AllTableStatus = await dbOperations.getAllTableStatus();
         console.log("取得所有桌號狀態 : ", AllTableStatus)
         return res.json(AllTableStatus);
-        } catch (e) {
+    } catch (e) {
         res.status(500).json({ message: "取得所有桌號狀態失敗" }); // 发送带有500状态码的JSON响应
     }
 });
@@ -101,11 +100,10 @@ router.post('/addSubOrder/:mainOrderId', async (req, res) => {
     }
 })
 
-router.post('/SubOrder/:SubOrderId', async (req, res) => {
+router.post('/SubOrder', async (req, res) => {
     //送出訂單
     // http://localhost:8080/order/SubOrder/12
-    const SubOrder = req.body.subOrder;
-    const { SubOrderId } = req.params;
+    const { SubOrder, SubOrderId } = req.body;
     console.log('SubOrder', SubOrder)
     console.log('SubOrderId', SubOrderId)
 
@@ -169,9 +167,9 @@ router.post('/clean-table', async (req, res) => {
 });
 
 //刪除訂單品項
-router.delete('/foods/:subOrderId/:menuItemId', async (req, res) => {
-    const SubOrderId = req.params['subOrderId']
-    const MenuItemId = req.params['menuItemId']
+router.delete('/foods', async (req, res) => {
+    const SubOrderId = req.body.subOrderId
+    const MenuItemId = req.body.menuItemId
 
     try {
         var result = await dbOperations.deleteMenuItemFromSubOrder(SubOrderId, MenuItemId)

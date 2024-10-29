@@ -659,7 +659,7 @@ const dbOperations = {
    * 生成資料用
    */
   async processGeneratedOrders() {
-    const variousMethods = require("./variousMethods.js")
+    const variousMethods = require("../utils/variousMethods.js")
 
     const orders = variousMethods.getGeneratedOrders(); // 假設這會返回一個訂單陣列
 
