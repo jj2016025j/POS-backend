@@ -70,7 +70,7 @@ const TEST_MYSQL_DATABASE = process.env.TEST_MYSQL_DATABASE;
     `
     , "", "建立 MenuItems 資料表")
 
-  const itemData = require("./script/data/fangsFoodData.js")
+  const itemData = require("./data/fangsFoodData.js")
   await dbOperations.insertIntoMenuItems(itemData, categoryMap)
 
   // 主訂單
