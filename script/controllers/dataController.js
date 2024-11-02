@@ -1,38 +1,34 @@
-// controllers/dataController.js
-const pool = require('../database/operations');
-const { generateDateArray, generateClassificationData, generateItemData, fillMissingDatesAndRandom } = require('../utils/dataUtils');
-const { sendTestResponse } = require('../test/testResponse');
+const { DataModel } = require('../database/models');
+const { validateReportParams, generateWhereConditions, getGroupByClause, getMetricsColumn } = require('../utils/reportUtils');
 
-exports.getAllData = async (req, res) => {
+const getDataReport = async (req, res) => {
+    const { startTime, endTime, metric, timeUnit, category, item } = req.query;
+
     try {
-        const sellData = await pool.getBackEndData('all', 'all', 'month');
-        res.json(sellData);
+        // 驗證參數
+        validateReportParams({ startTime, endTime, metric, timeUnit });
+
+        // 生成查詢條件和分組條件
+        const whereConditions = generateWhereConditions({ startTime, endTime, category, item });
+        const groupBy = getGroupByClause(timeUnit);
+        const metricsColumn = getMetricsColumn(metric);
+
+        // 執行查詢
+        const reportData = await DataModel.findAll({
+            where: whereConditions,
+            attributes: [
+                [groupBy, 'timeUnit'],
+                [metricsColumn, metric]
+            ],
+            group: ['timeUnit'],
+            order: [['timeUnit', 'ASC']]
+        });
+
+        res.json(reportData);
     } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch data' });
+        console.error("Failed to fetch report data:", error);
+        res.status(500).json({ error: error.message || 'Failed to fetch report data' });
     }
 };
 
-exports.getLastMonthData = async (req, res) => {
-    try {
-        const sellData = await pool.getBackEndData('lastMonth', 'byItem');
-        res.json(sellData);
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch data' });
-    }
-};
-
-exports.getDataReport = (req, res) => {
-    if (sendTestResponse(res, '取得後臺報表 API測試成功')) return; // 若測試模式啟用，直接返回測試訊息
-
-    const { startTime, endTime, statisticalContent } = req.body;
-
-    // Log the received parameters
-    console.log('Received parameters:', { startTime, endTime, statisticalContent });
-
-    if (!startTime || !endTime || !statisticalContent) {
-        return res.status(400).json({ error: 'Missing required parameters' });
-    }
-
-    const completeData = fillMissingDatesAndRandom([], startTime, endTime, statisticalContent);
-    res.json(completeData);
-};
+module.exports = { getDataReport };

@@ -27,4 +27,16 @@ function getSequelizeInstance(withDb = true) {
   });
 }
 
-module.exports = { getSequelizeInstance };
+const sequelize = new Sequelize(databaseName, process.env.USE_LOCAL_DB === 'true' ? process.env.MYSQL_USER : 'admin', process.env.USE_LOCAL_DB === 'true' ? process.env.MYSQL_PASSWORD : '', {
+  host: process.env.USE_LOCAL_DB === 'true' ? process.env.MYSQL_HOST : 'fangfoodbackend-v3-instance-1.cd08s4082uws.ap-northeast-1.rds.amazonaws.com',
+  dialect: 'mysql',
+  logging: false,
+  pool: {
+    max: 5,           // 最大連接數
+    min: 0,           // 最小連接數
+    acquire: 30000,   // 取得連接的最長時間
+    idle: 10000       // 釋放前等待的最長時間
+  }
+});
+
+module.exports = { sequelize, getSequelizeInstance };

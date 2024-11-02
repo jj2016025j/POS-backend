@@ -1,10 +1,8 @@
 // routes/dataRoutes.js
 const express = require('express');
 const router = express.Router();
-const dataController = require('../controllers/dataController');
+const { getDataReport } = require('../controllers/dataController');
 
-router.get('/all', dataController.getAllData);
-router.get('/lastMonth', dataController.getLastMonthData);
-router.get('/getDataReport', dataController.getDataReport);
+router.get('/getDataReport', getDataReport);
 
 module.exports = router;

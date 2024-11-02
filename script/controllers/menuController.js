@@ -1,72 +1,60 @@
 // controllers/menuController.js
-const menuService = require('../services/menuService');
-const { sendTestResponse } = require('../test/testResponse');
+const { MenuItem, Category } = require('../models');
 
-exports.getAllMenuItems = async (req, res) => {
-    if (sendTestResponse(res, '取得所有品項API測試成功')) return; // 若測試模式啟用，直接返回測試訊息
-
+const getAllMenuItems = async (req, res) => {
     try {
-        const menuItems = await menuService.getMenuItems();
-        res.json({ categories, menuItems });
+        const menuItems = await MenuItem.findAll({ include: Category });
+        res.json({ menuItems });
     } catch (error) {
-        console.error(error);
-        res.status(500).send('Server error');
+        console.error("Failed to get menu items:", error);
+        res.status(500).json({ error: 'Server error' });
     }
 };
 
-exports.addNewMenuItem = async (req, res) => {
-    if (sendTestResponse(res, '新增品項API測試成功')) return; // 若測試模式啟用，直接返回測試訊息
-
-    const menuItem = req.body;
+const addNewMenuItem = async (req, res) => {
     try {
-        const results = await menuService.insertMenuItem(menuItem);
-        res.status(201).send("成功插入資料, 插入的ID: " + results.insertId);
+        const menuItem = await MenuItem.create(req.body);
+        res.status(201).json(menuItem);
     } catch (error) {
-        console.error(error);
-        res.status(500).send('Server error');
+        console.error("Failed to add menu item:", error);
+        res.status(500).json({ error: 'Server error' });
     }
 };
 
-exports.editMenuItem = async (req, res) => {
-    if (sendTestResponse(res, '更新品項API測試成功')) return; // 若測試模式啟用，直接返回測試訊息
-
-    const menuitemId = req.params.menuitemId;
-    const itemUpdates = req.body;
+const editMenuItem = async (req, res) => {
     try {
-        const results = await menuService.updateMenuItem(menuitemId, itemUpdates);
-        if (results.affectedRows === 0) {
-            res.status(404).send("未找到需要更新的記錄");
-        } else {
-            res.status(200).send("更新資料成功，影響的行數：" + results.affectedRows);
+        const updatedRows = await MenuItem.update(req.body, {
+            where: { Id: req.params.menuitemId }
+        });
+        if (updatedRows[0] === 0) {
+            return res.status(404).json({ error: "未找到需要更新的記錄" });
         }
+        res.status(200).json({ message: "更新資料成功" });
     } catch (error) {
-        console.error(error);
-        res.status(500).send('Server error');
+        console.error("Failed to update menu item:", error);
+        res.status(500).json({ error: 'Server error' });
     }
 };
 
-exports.deleteMenuItem = async (req, res) => {
-    if (sendTestResponse(res, '刪除品項API測試成功')) return; // 若測試模式啟用，直接返回測試訊息
-
-    const item = req.body;
+const deleteMenuItem = async (req, res) => {
     try {
-        const results = await menuService.deleteMenuItem(item);
-        res.status(201).send("刪除資料成功，影響的行數：" + results.affectedRows);
+        const deletedRows = await MenuItem.destroy({
+            where: { Id: req.body.menuItemId }
+        });
+        if (deletedRows === 0) {
+            return res.status(404).json({ error: "未找到需要刪除的記錄" });
+        }
+        res.status(200).json({ message: "刪除成功", deletedRows });
     } catch (error) {
-        console.error(error);
-        res.status(500).send('Server error');
+        console.error("Failed to delete menu item:", error);
+        res.status(500).json({ error: 'Server error' });
     }
 };
 
-// exports.getMenuItem = async (req, res) => {
-//     if (sendTestResponse(res)) return; // 若測試模式啟用，直接返回測試訊息
-
-//     const menuItemId = req.params.menuItemId;
-//     try {
-//         const menuItemInfo = await menuService.getMenuItemInfo(menuItemId);
-//         res.json(menuItemInfo);
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).send('Server error');
-//     }
-// };
+// 導出為物件
+module.exports = {
+    getAllMenuItems,
+    addNewMenuItem,
+    editMenuItem,
+    deleteMenuItem
+};
