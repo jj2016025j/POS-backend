@@ -19,7 +19,7 @@ if (NODE_ENV === 'production') {
 }
 
 // 3. 資料庫連接初始化
-const { initializeDatabase } = require('./script/database/init');
+const { initializeDatabase } = require('./script/database');
 initializeDatabase().then(() => {
     console.log("Database connected successfully");
 

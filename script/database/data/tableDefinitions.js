@@ -1,13 +1,13 @@
 // db/tableDefinitions.js
-const CategoryTable = require('../tables/CategoryTable');
-const MenuItemsTable = require('../tables/MenuItemsTable');
-const TablesTable = require('../tables/TablesTable');
-const MainOrdersTable = require('../tables/MainOrdersTable');
-const MainOrderMappingsTable = require('../tables/MainOrderMappingsTable');
-const SubOrdersTable = require('../tables/SubOrdersTable');
-const SubOrderMappingsTable = require('../tables/SubOrderMappingsTable');
-const UsersTable = require('../tables/UsersTable');
-const TableOperationsLogTable = require('../tables/TableOperationsLogTable');
+const CategoryTable = require('../tables/Category');
+const MenuItemsTable = require('../tables/MenuItems');
+const TablesTable = require('../tables/Tables');
+const MainOrdersTable = require('../tables/MainOrders');
+const MainOrderMappingsTable = require('../tables/MainOrderMappings');
+const SubOrdersTable = require('../tables/SubOrders');
+const SubOrderMappingsTable = require('../tables/SubOrderMappings');
+const UsersTable = require('../tables/Users');
+const TableOperationsLogTable = require('../tables/TableOperationsLog');
 
 module.exports = {
   CategoryTable,

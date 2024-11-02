@@ -1,30 +1,25 @@
-// database/database.js
+// database/init/initializeDatabase.js
+const createDatabase = require('./initializeDatabase/createDatabase');
+const createTables = require('./initializeDatabase/createTables');
+const insertDefaultData = require('./initializeDatabase/insertDefaultData');
 
-// 匯入基本模組
-const { pool, initializeConnection } = require('./connection');
-const dbBasic = require('./basic/');
+async function initializeDatabase() {
+  try {
+    // 創建資料庫並建立 Sequelize 連線
+    const sequelize = await createDatabase();
 
-// 匯入操作模組
-const categoryOperations = require('./operations/categoryOperations');
-const generateReports = require('./operations/generateReports');
-const menuOperations = require('./operations/menuOperations');
-const orderOperations = require('./operations/orderOperations');
-const paymentOperations = require('./operations/paymentOperations');
-const reportQueries = require('./operations/reportQueries');
-const userOperations = require('./operations/userOperations');
+    // 同步表格
+    await createTables(sequelize);
 
-// 匯出所有模組
-module.exports = {
-    pool,
-    initializeConnection,
+    // 插入預設資料
+    await insertDefaultData(sequelize);
 
-    dbBasic,
+    console.log("資料庫初始化成功！");
+    return sequelize;
+  } catch (error) {
+    console.error("資料庫初始化失敗:", error);
+    throw error;
+  }
+}
 
-    categoryOperations,
-    generateReports,
-    menuOperations,
-    orderOperations,
-    paymentOperations,
-    reportQueries,
-    userOperations
-};
+module.exports = { initializeDatabase };
