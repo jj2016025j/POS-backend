@@ -1,7 +1,8 @@
 // database/init/createOrUseDatabase.js
-const { createDatabase, useDatabase } = require('../dbDatabaseManagement');
+const { createDatabase, useDatabase } = require('../basic/dbDatabaseManagement');
+const sqlErrorHandler = require('../../utils/sqlErrorHandler');
 
-async function createOrUseDatabase(databaseName) {
+async function initializeDatabase(databaseName) {
   try {
     await useDatabase(databaseName);
     console.log(`已使用資料庫: ${databaseName}`);
@@ -12,9 +13,10 @@ async function createOrUseDatabase(databaseName) {
       await useDatabase(databaseName);
       console.log(`資料庫 ${databaseName} 創建並已使用`);
     } else {
-      throw error;
+      const simpleError = sqlErrorHandler(error);
+      console.error('資料庫創建或使用失敗:', simpleError);
     }
   }
 }
 
-module.exports = createOrUseDatabase;
+module.exports = initializeDatabase;

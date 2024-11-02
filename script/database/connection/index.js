@@ -15,7 +15,7 @@ function getPool() {
 async function closeConnection() {
   if (pool) {
     await pool.end();
-    console.log("資料庫連接已關閉");
+    console.log(` ${process.env.USE_LOCAL_DB === 'true' ? '本地' : 'AWS'} 資料庫連接已關閉`);
   }
 }
 

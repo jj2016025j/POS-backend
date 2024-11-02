@@ -19,7 +19,7 @@ if (NODE_ENV === 'production') {
 }
 
 // 3. 資料庫連接初始化
-const { initializeDatabase } = require('./script/database');
+const { initializeDatabase } = require('./script/database/init');
 initializeDatabase().then(() => {
     console.log("Database connected successfully");
 
@@ -31,7 +31,7 @@ initializeDatabase().then(() => {
     require('./script/router')(app);
 
     // 6. 加載錯誤處理中間件
-    const errorHandler = require('./script/middlewares/errorHandler');
+    const errorHandler = require('./script/utils/errorHandler');
     app.use(errorHandler);
 
     // 7. 啟動伺服器
@@ -52,12 +52,3 @@ process.on('unhandledRejection', (reason, promise) => {
     console.error("Unhandled Rejection:", reason);
     process.exit(1); // 終止程序
 });
-
-
-
-// 加載錯誤處理中間件
-const errorHandler = require('./script/middlewares/errorHandler');
-app.use(errorHandler);
-
-// 6. 啟動伺服器
-require('./script/server')(app, port);

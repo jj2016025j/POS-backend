@@ -1,0 +1,14 @@
+// db/tables/UsersTable.js
+module.exports = `
+  CREATE TABLE IF NOT EXISTS Users (
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    Name VARCHAR(255) NOT NULL,
+    GoogleID VARCHAR(255) DEFAULT NULL,
+    Date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    Thumbnail VARCHAR(255) DEFAULT 'https://img.league-funny.com/imgur/148292128067.jpg',
+    Email VARCHAR(255) UNIQUE,
+    Password VARCHAR(1024) DEFAULT NULL,
+    LineID VARCHAR(255) DEFAULT NULL,
+    ResetToken VARCHAR(255) DEFAULT NULL
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+`;

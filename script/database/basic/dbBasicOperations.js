@@ -1,5 +1,6 @@
 // database/baseOperations.js
 const { getPool } = require('../connection');
+const sqlErrorHandler = require('../../utils/sqlErrorHandler');
 
 async function query(sql, params = []) {
   const pool = getPool();
@@ -7,8 +8,8 @@ async function query(sql, params = []) {
     const [results] = await pool.execute(sql, params);
     return results;
   } catch (error) {
-    console.error('Database query failed:', error);
-    throw error;
+    const simpleError = sqlErrorHandler(error);
+    console.error('資料庫操作發生錯誤:', simpleError);
   }
 }
 
