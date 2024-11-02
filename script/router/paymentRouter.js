@@ -1,14 +1,16 @@
 // routes/paymentRoutes.js
 const express = require('express');
 const router = express.Router();
-const paymentController = require('../controllers/paymentController');
+const { cashCheckout, creditCardCheckout, cancelCheckout, checkoutOrder, initiateLinePay, confirmLinePay } = require('../controllers/paymentController');
 
-router.post('/cashCheckout', paymentController.cashCheckout);
-router.post('/initiateLinePay', paymentController.initiateLinePay);
-router.get('/confirmLinePay', paymentController.confirmLinePay);
-router.post('/creditCardCheckout', paymentController.creditCardCheckout);
-router.post('/cancelCheckout', paymentController.cancelCheckout);
+// 基礎結帳操作
+router.post('/checkout/cash', cashCheckout);
+router.post('/checkout/credit-card', creditCardCheckout);
+router.post('/checkout/cancel', cancelCheckout);
+router.post('/checkout/order', checkoutOrder);
 
-router.post('/checkoutOrder', paymentController.checkoutOrder);
-router.get('/successCheckout', paymentController.successCheckout);
+// Line Pay 操作
+router.post('/line-pay/initiate', initiateLinePay);
+router.get('/line-pay/confirm', confirmLinePay);
+
 module.exports = router;

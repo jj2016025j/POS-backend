@@ -1,5 +1,5 @@
 // controllers/menuController.js
-const { MenuItem, Category } = require('../models');
+const { MenuItem, Category } = require('../database/models');
 
 const getAllMenuItems = async (req, res) => {
     try {

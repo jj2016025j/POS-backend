@@ -1,5 +1,5 @@
 // services/orderService.js
-const { MainOrder, Table } = require('../models');
+const { MainOrder, Table } = require('../database/models');
 
 module.exports = {
     // 建立新的主訂單

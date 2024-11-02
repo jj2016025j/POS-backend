@@ -1,5 +1,5 @@
 // services/subOrderController.js
-const { SubOrder, MenuItem } = require('../models');
+const { SubOrder, MenuItem } = require('../database/models');
 
 module.exports = {
     // 建立子訂單

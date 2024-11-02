@@ -1,5 +1,5 @@
 // services/tableController.js
-const { Table, MainOrder } = require('../models');
+const { Table, MainOrder } = require('../database/models');
 
 module.exports = {
     // 更新桌位狀態
