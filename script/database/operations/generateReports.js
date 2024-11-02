@@ -1,7 +1,7 @@
 // db/generateReports.js
-const pool = require('../dbBasicOperations');
+const pool = require('../basic/dbBasicOperations');
 const { generateTimeGroupClause, generateSalesReportQuery } = require('./reportQueries');
-const { determineTimeInterval } = require('./reportHelpers');
+const { determineTimeInterval } = require('../../utils/dataUtils');
 
 // 基本銷售報表生成
 async function generateSalesReport(type, startDate, endDate = new Date()) {

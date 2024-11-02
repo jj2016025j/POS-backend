@@ -1,9 +1,10 @@
 // database/database.js
 
 // 匯入基本模組
-const { pool, initializeConnection } = require('./basic/connection');
+const { pool, initializeConnection } = require('./connection');
 const dbBasicOperations = require('./basic/dbBasicOperations');
-const dbTableAndDatabase = require('./basic/dbTableAndDatabase');
+const dbDatabaseManagement = require('./basic/dbDatabaseManagement');
+const dbTableManagement = require('./basic/dbTableManagement');
 
 // 匯入操作模組
 const categoryOperations = require('./operations/categoryOperations');
@@ -20,7 +21,8 @@ module.exports = {
     pool,
     initializeConnection,
     dbBasicOperations,
-    dbTableAndDatabase,
+    dbDatabaseManagement,
+    dbTableManagement,
     categoryOperations,
     generateReports,
     menuOperations,

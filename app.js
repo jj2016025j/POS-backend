@@ -18,32 +18,42 @@ if (NODE_ENV === 'production') {
     console.log(`Running in ${NODE_ENV} mode`);
 }
 
-// 資料庫連接
+// 3. 資料庫連接初始化
 const { initializeDatabase } = require('./script/database');
-initializeDatabase(); // 測試並初始化資料庫
+initializeDatabase().then(() => {
+    console.log("Database connected successfully");
 
-// 5. 基本中間件設置（安全性、日誌）
-const helmet = require('helmet');
-const morgan = require('morgan');
-app.use(helmet()); // 設置安全標頭
-app.use(morgan('dev')); // 請求日誌
+    // 4. 設置基本中間件
+    const setupMiddleware = require('./script/middleware');
+    setupMiddleware(app);
 
-app.use(helmet({
-    contentSecurityPolicy: false, // 關閉 Content-Security-Policy (若不需要)
-    crossOriginEmbedderPolicy: false, // 停用嵌入策略，視需求而定
-}));
+    // 5. 設置路由
+    require('./script/router')(app);
 
-const fs = require('fs');
-const path = require('path');
-const logStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' });
+    // 6. 加載錯誤處理中間件
+    const errorHandler = require('./script/middlewares/errorHandler');
+    app.use(errorHandler);
 
-app.use(morgan('combined', { stream: logStream })); // 'combined' 模式提供更詳細的日誌
+    // 7. 啟動伺服器
+    require('./script/server')(app, port);
 
-// 匯入並應用中介軟體模組
-require('./script/middleware')(app);
+}).catch(error => {
+    console.error("Failed to initialize database:", error);
+    process.exit(1);
+});
 
-// 匯入並應用路由模組
-require('./script/router')(app);
+// 8. 全局錯誤監控
+process.on('uncaughtException', (error) => {
+    console.error("Uncaught Exception:", error);
+    process.exit(1); // 終止程序
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.error("Unhandled Rejection:", reason);
+    process.exit(1); // 終止程序
+});
+
+
 
 // 加載錯誤處理中間件
 const errorHandler = require('./script/middlewares/errorHandler');

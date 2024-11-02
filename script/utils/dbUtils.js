@@ -26,7 +26,7 @@ genearteTradeNo: () => {
   return 'ORD' + Date.now() + Math.random().toString(36).substring(4);
 },
 
-uploadFood: async (formData, imageFile) => {
+ async (formData, imageFile) => {
   return new Promise((resolve, reject) => {
     const image_name = pool.uploadImage(imageFile, './public/uploads/foods');
     const image_path = '/uploads/foods/' + image_name;
@@ -45,4 +45,4 @@ uploadFood: async (formData, imageFile) => {
       resolve(results)
     });
   })
-},
+}
