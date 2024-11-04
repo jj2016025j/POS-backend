@@ -28,7 +28,7 @@ async function createTables(sequelize) {
   MainOrder.belongsTo(Table, { foreignKey: 'TableId' });
 
   await sequelize.sync({ alter: true });
-  console.log('所有表格已同步');
+  console.log('\n所有表格已同步');
 }
 
 module.exports = createTables;

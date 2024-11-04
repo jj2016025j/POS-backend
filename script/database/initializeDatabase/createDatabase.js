@@ -7,7 +7,7 @@ async function createDatabase() {
 
   try {
     await sequelizeWithoutDb.query(`CREATE DATABASE IF NOT EXISTS ${process.env.MYSQL_DATABASE}`);
-    console.log(`已創建或連接至資料庫: ${process.env.MYSQL_DATABASE}`);
+    console.log(`\n已創建或連接至資料庫: ${process.env.MYSQL_DATABASE}`);
   } catch (error) {
     console.error("資料庫創建失敗:", error);
   } finally {

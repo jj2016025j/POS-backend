@@ -3,7 +3,7 @@ require('dotenv').config();
 const { Sequelize } = require('sequelize');
 
 // log 環境變數來確認設定正確
-console.log('資料庫設定:');
+console.log('\n資料庫設定:');
 console.log('MYSQL_HOST:', process.env.MYSQL_HOST);
 console.log('MYSQL_USER:', process.env.MYSQL_USER);
 console.log('MYSQL_PASSWORD:', process.env.MYSQL_PASSWORD ? '已設定' : '未設定');

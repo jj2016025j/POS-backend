@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const { sequelize } = require('../config/databaseConfig');
-const { envCheck } = require('../test/testEnv');
+const { envCheck } = require('../utils/testEnv');
 
 // 測試伺服器連線
 router.get('/ping', (req, res) => {

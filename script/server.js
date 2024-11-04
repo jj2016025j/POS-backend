@@ -9,11 +9,11 @@ module.exports = async (app, port) => {
         const publicIP = await getPublicIP();
 
         app.listen(port, () => {
-            console.log(`官方網站: http://localhost:${port}`);
+            console.log(`\n本地IP:            http://localhost:${port}`);
             console.log(`局域網 IPv4 地址:  http://${localIP}:${port}`);
             if (!publicIP)
                 return
-            console.log(`公網 IPv4 地址:  http://${publicIP}:${port}`);
+            console.log(`公網 IPv4 地址:    http://${publicIP}:${port}`);
 
         });
     } catch (error) {

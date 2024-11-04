@@ -1,8 +1,8 @@
 // routes/orderRoutes.js
 const express = require('express');
 const router = express.Router();
-const { createMainOrder, getMainOrderInfo, getRecentOrders, editOrder } = require('../controllers/mainOrderController');
-const { createSubOrder, submitSubOrder, getSubOrderInfo, editSubOrder } = require('../controllers/subOrderController');
+const { createMainOrder, getMainOrderInfo, getRecentOrders, editMainOrder } = require('../controllers/mainOrderController');
+const { createSubOrder, deleteSubOrderItem, getSubOrderInfo, editSubOrder } = require('../controllers/subOrderController');
 const { getAllTableInfo, updateTableInfo } = require('../controllers/tableController');
 const { printQRCode } = require('../controllers/printerController');
 
@@ -11,10 +11,10 @@ router.get('/getAllTableInfo', getAllTableInfo);
 router.post('/updateTableInfo', updateTableInfo);
 
 // 訂單操作路由 (Order Operations)
-router.get('/getRecentOrders', getRecentOrders);
 router.post('/createNewOrder', createMainOrder);
 router.get('/getMainOrderInfo', getMainOrderInfo);
-router.post('/editOrder', editOrder);
+router.post('/editMainOrder', editMainOrder);
+router.get('/getRecentOrders', getRecentOrders);
 
 router.post('/printQRcode', printQRCode);
 
@@ -22,7 +22,7 @@ router.post('/printQRcode', printQRCode);
 router.post('/createSubOrder', createSubOrder);
 router.get('/getSubOrderInfo', getSubOrderInfo);
 router.post('/editSubOrder', editSubOrder);
-router.post('/deleteSubOrder', submitSubOrder);
+router.post('/deleteSubOrderItem', deleteSubOrderItem);
 
 
 module.exports = router;

@@ -21,7 +21,7 @@ if (NODE_ENV === 'production') {
 // 3. 資料庫連接初始化
 const { initializeDatabase } = require('./script/database');
 initializeDatabase().then(() => {
-    console.log("Database connected successfully");
+    console.log("\n資料庫連接成功");
 
     // 4. 設置基本中間件
     const setupMiddleware = require('./script/middleware');
@@ -38,7 +38,7 @@ initializeDatabase().then(() => {
     require('./script/server')(app, port);
 
 }).catch(error => {
-    console.error("Failed to initialize database:", error);
+    console.error("資料庫初始化失敗:", error);
     process.exit(1);
 });
 
