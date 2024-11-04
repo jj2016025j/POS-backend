@@ -1,5 +1,5 @@
 const { DataModel } = require('../database/models');
-const { validateReportParams, generateWhereConditions, getGroupByClause, getMetricsColumn } = require('../utils/reportUtils');
+const { validateReportParams, generateWhereConditions, getGroupByClause, getMetricsColumn } = require('../utils');
 
 const getDataReport = async (req, res) => {
     const { startTime, endTime, metric, timeUnit, category, item } = req.query;

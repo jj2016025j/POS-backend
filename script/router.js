@@ -2,10 +2,11 @@
 // const passport = require("./config/passport");
 
 // 引入業務邏輯的路由模組
-const dataRouter = require('./router/dataRouter');
-const menuRouter = require('./router/menuRouter');
-const orderRouter = require('./router/orderRouter');
-const paymentRouter = require('./router/paymentRouter');
+const dataRoutes = require('./router/dataRoutes');
+const menuRoutes = require('./router/menuRoutes');
+const orderRoutes = require('./router/orderRoutes');
+const paymentRoutes = require('./router/paymentRoutes');
+const testRoutes = require('./router/testRoutes');
 
 module.exports = (app) => {
     // // 認證路由設定
@@ -22,8 +23,9 @@ module.exports = (app) => {
     // }));
 
     // 業務路由設定
-    app.use('/menu', menuRouter);
-    app.use('/order', orderRouter);
-    app.use('/pay', paymentRouter);
-    app.use('/data', dataRouter);
+    app.use('/menu', menuRoutes);
+    app.use('/order', orderRoutes);
+    app.use('/pay', paymentRoutes);
+    app.use('/data', dataRoutes);
+    app.use('/test', testRoutes);
 };

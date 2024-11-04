@@ -2,6 +2,16 @@
 const { Table, MainOrder } = require('../database/models');
 
 module.exports = {
+    // 取得所有桌位狀態
+    async getAllTableInfo() {
+        try {
+            return await Table.findAll({ limit: 10 });
+        } catch (error) {
+            console.error("Error in getAllTableInfo:", error);
+            throw error;
+        }
+    },
+
     // 更新桌位狀態
     async updateTableStatus(tableNumber, status, mainOrderId = null) {
         const table = await Table.findOne({ where: { TableNumber: tableNumber } });
@@ -33,11 +43,6 @@ module.exports = {
             include: [Table],
         });
         return mainOrder?.Table || null;
-    },
-
-    // 取得所有桌位狀態
-    async getAllTableInfo() {
-        return await Table.findAll();
     },
 
     // 清潔桌位（重置桌位狀態）

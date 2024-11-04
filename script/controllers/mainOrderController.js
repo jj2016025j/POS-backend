@@ -1,11 +1,18 @@
 // services/orderService.js
 const { MainOrder, Table } = require('../database/models');
+const { generateOrderId } = require('../utils');
 
 module.exports = {
     // 建立新的主訂單
     async createMainOrder(tableNumber) {
+        mainOrderId = generateOrderId()
+        console.log({
+            tableNumber: tableNumber,
+            mainOrderId: mainOrderId
+        })
         return await MainOrder.create({
             TableId: tableNumber,
+            MainOrderId: mainOrderId,
             OrderStatus: '未結帳', // 初始狀態
         });
     },

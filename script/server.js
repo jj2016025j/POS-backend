@@ -1,6 +1,6 @@
 // server.js
 const express = require('express');
-const { getLocalIPAddress, getPublicIP } = require('./utils/getIPAddress');
+const { getLocalIPAddress, getPublicIP } = require('./utils');
 
 // 啟動伺服器
 module.exports = async (app, port) => {

@@ -1,19 +1,22 @@
 // utils/printUtils.js
-const { somePrinterLibrary } = require('some-printer-library');  // 假設打印機庫
+// const somePrinterLibrary = require('some-printer-library');  // 假設打印機庫
 
-exports.printOrderWithQR = async (url, mainOrderId, tableNumber) => {
-    // 使用打印機庫來生成並打印QR Code
+async function printOrderWithQR(url, mainOrderId, tableNumber) {
     try {
-        await somePrinterLibrary.printQRCode(url, mainOrderId, tableNumber);
+        // await somePrinterLibrary.printQRCode(url, mainOrderId, tableNumber);
     } catch (error) {
+        console.error("打印失敗: ", error.message);
         throw new Error("打印失敗: " + error.message);
     }
-};
+}
 
-exports.printOrder = async (orderData) => {
+async function printOrder(orderData) {
     try {
         await somePrinterLibrary.print(orderData);
     } catch (error) {
+        console.error("打印失敗: ", error.message);
         throw new Error("打印失敗: " + error.message);
     }
-};
+}
+
+module.exports = { printOrderWithQR, printOrder };

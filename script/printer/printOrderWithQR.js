@@ -1,7 +1,7 @@
 // printOrderWithQR.js
 const escpos = require('escpos');
 const qr = require('qr-image');
-const { getLocalIPAddress } = require('../utils/getIPAddress');
+const { getLocalIPAddress } = require('../utils');
 const LocalIP = getLocalIPAddress();
 
 function printOrderWithQR(printer, device, url = `http://${LocalIP}:3000/pos`, orderNumber = 1, tableNumber = 1, contents = []) {

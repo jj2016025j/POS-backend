@@ -1,5 +1,5 @@
 const { MainOrder, Table, Order } = require('../database/models');
-const { initiateLinePayTransaction, confirmLinePayTransaction } = require('../utils/linePayUtils');
+const { initiateLinePayTransaction, confirmLinePayTransaction } = require('../utils');
 
 module.exports = {
     // 現金結帳處理並生成發票

@@ -1,5 +1,5 @@
 // database/init/createDatabase.js
-const { getSequelizeInstance } = require('../config');
+const { getSequelizeInstance } = require('../../config/databaseConfig');
 
 async function createDatabase() {
   // 建立無資料庫的連線，用於檢查或創建資料庫

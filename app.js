@@ -31,8 +31,8 @@ initializeDatabase().then(() => {
     require('./script/router')(app);
 
     // 6. 加載錯誤處理中間件
-    const errorHandler = require('./script/utils/errorHandler');
-    app.use(errorHandler);
+    // const errorHandler = require('./script/utils/errorHandler');
+    // app.use(errorHandler);
 
     // 7. 啟動伺服器
     require('./script/server')(app, port);
@@ -42,13 +42,13 @@ initializeDatabase().then(() => {
     process.exit(1);
 });
 
-// 8. 全局錯誤監控
-process.on('uncaughtException', (error) => {
-    console.error("Uncaught Exception:", error);
-    process.exit(1); // 終止程序
-});
+// // 8. 全局錯誤監控
+// process.on('uncaughtException', (error) => {
+//     console.error("Uncaught Exception:", error);
+//     process.exit(1); // 終止程序
+// });
 
-process.on('unhandledRejection', (reason, promise) => {
-    console.error("Unhandled Rejection:", reason);
-    process.exit(1); // 終止程序
-});
+// process.on('unhandledRejection', (reason, promise) => {
+//     console.error("Unhandled Rejection:", reason);
+//     process.exit(1); // 終止程序
+// });
