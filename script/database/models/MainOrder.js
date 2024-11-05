@@ -9,14 +9,10 @@ class MainOrder extends Model {
 
 MainOrder.initModel = (sequelize) => {
   MainOrder.init({
-    Id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true
-    },
     MainOrderId: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
+      primaryKey: true
     },
     SubTotal: {
       type: DataTypes.INTEGER,

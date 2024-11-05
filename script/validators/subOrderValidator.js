@@ -42,10 +42,10 @@ const getSubOrderInfoSchema = Joi.object({
     });
 
 // 刪除子訂單項目驗證架構
-const deleteSubOrderItemSchema = Joi.object({
-    subOrderItemId: Joi.string().required().messages({
-        'string.base': 'subOrderItemId 必須為字串',
-        'any.required': '必須提供 subOrderItemId'
+const deleteSubOrderSchema = Joi.object({
+    subOrderId: Joi.string().required().messages({
+        'string.base': 'subOrderId 必須為字串',
+        'any.required': '必須提供 subOrderId'
     })
 });
 
@@ -53,5 +53,5 @@ module.exports = {
     createSubOrderSchema,
     editSubOrderSchema,
     getSubOrderInfoSchema,
-    deleteSubOrderItemSchema
+    deleteSubOrderSchema
 };

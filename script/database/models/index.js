@@ -4,7 +4,7 @@ const { sequelize } = require('../../config/databaseConfig');
 const Category = require('./Category');
 const MainOrder = require('./MainOrder');
 const MenuItem = require('./MenuItem');
-// const SubOrderItems = require('./SubOrderItems'); 
+const SubOrderItems = require('./SubOrderItems'); 
 const SubOrder = require('./SubOrder');
 const Table = require('./Table');
 const User = require('./User');
@@ -15,7 +15,7 @@ const TableOperationsLog = require('./TableOperationsLog');
 Category.initModel(sequelize);
 MainOrder.initModel(sequelize);
 MenuItem.initModel(sequelize);
-// SubOrderItems.initModel(sequelize);
+SubOrderItems.initModel(sequelize);
 SubOrder.initModel(sequelize);
 Table.initModel(sequelize);
 User.initModel(sequelize);
@@ -35,17 +35,17 @@ SubOrder.belongsTo(MainOrder, { foreignKey: 'MainOrderId' });
 Table.associate({ MainOrder });
 MainOrder.associate({ Table });
 
-// SubOrder.belongsToMany(MenuItem, {
-//     through: SubOrderItems,
-//     foreignKey: 'SubOrderId',
-//     otherKey: 'MenuItemId'
-// });
+SubOrder.belongsToMany(MenuItem, {
+    through: SubOrderItems,
+    foreignKey: 'SubOrderId',
+    otherKey: 'MenuItemId'
+});
 
-// MenuItem.belongsToMany(SubOrder, {
-//     through: SubOrderItems,
-//     foreignKey: 'MenuItemId',
-//     otherKey: 'SubOrderId'
-// });
+MenuItem.belongsToMany(SubOrder, {
+    through: SubOrderItems,
+    foreignKey: 'MenuItemId',
+    otherKey: 'SubOrderId'
+});
 
 // 導出所有模型和 Sequelize 實例
 module.exports = {
@@ -53,7 +53,7 @@ module.exports = {
     Category,
     MainOrder,
     MenuItem,
-    // SubOrderItems,
+    SubOrderItems,
     SubOrder,
     Table,
     User,

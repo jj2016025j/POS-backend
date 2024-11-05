@@ -5,8 +5,7 @@ module.exports = {
         console.log("Received request to print QR code");
 
         // 模擬接收到的資料，例如 MainOrderId 和 TableNumber
-        const { MainOrderId, TableNumber } = req.body;
-        console.log(`MainOrderId: ${MainOrderId}, TableNumber: ${TableNumber}`);
+        const { MainOrderId } = req.body;
 
         try {
             // 假設這裡是 QR Code 的生成與打印邏輯 (目前用 console.log 模擬)
@@ -14,7 +13,7 @@ module.exports = {
             console.log(`Generated QR Code URL: ${fullUrl}`);
 
             // 模擬列印
-            console.log(`Printing QR code for Table ${TableNumber} with URL: ${fullUrl}`);
+            console.log(`Printing QR code for Table ${MainOrderId} with URL: ${fullUrl}`);
 
             // 回應成功訊息
             res.status(200).json({ message: "QR Code printed successfully", qrCodeUrl: fullUrl });

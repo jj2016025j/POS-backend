@@ -1,10 +1,10 @@
 // controllers/subOrderController.js
-const { SubOrder, MenuItem } = require('../database/models');
+const { SubOrder, MenuItem, SubOrderItems } = require('../database/models');
 const {
     createSubOrderSchema,
     editSubOrderSchema,
     getSubOrderInfoSchema,
-    deleteSubOrderItemSchema
+    deleteSubOrderSchema
 } = require('../validators/subOrderValidator');
 const { handleError } = require('../utils/errorHandler');
 const { generateSubOrderId } = require('../utils');
@@ -109,31 +109,32 @@ module.exports = {
                 }
             }
 
-            res.status(200).json({ message: "子訂單和菜單項目已成功更新" });
+            res.status(200).json(value);
         } catch (error) {
             handleError(res, error, '更新子訂單失敗');
         }
     },
-    
+
     // 刪除子訂單
     async deleteSubOrder(req, res, next) {
         try {
-            const { error, value } = deleteSubOrderItemSchema.validate(req.body);
+            const { error, value } = deleteSubOrderSchema.validate(req.body);
             if (error) {
                 return res.status(400).json({ error: error.details[0].message });
             }
 
-            const deleted = await MenuItem.destroy({
-                where: { id: value.subOrderItemId }
+            const deleted = await SubOrder.destroy({
+                where: { SubOrderId: value.subOrderId } // 使用 SubOrderId 刪除子訂單
             });
 
             if (deleted) {
-                res.status(200).json({ message: '餐點項目已成功刪除' });
+                res.status(200).json(value);
             } else {
-                res.status(404).json({ message: '找不到該餐點項目' });
+                res.status(404).json({ message: '找不到該子訂單' });
             }
         } catch (error) {
-            handleError(res, error, '刪除餐點項目失敗');
+            handleError(res, error, '刪除子訂單失敗');
         }
     }
+
 };

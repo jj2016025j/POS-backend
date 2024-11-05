@@ -3,7 +3,6 @@ const fileUtils = require('./fileUtils');
 const reportUtils = require('./reportUtils');
 const orderUtils = require('./orderUtils');
 const ipUtils = require('./ipUtils');
-const linePayUtils = require('./linePayUtils');
 const printUtils = require('./printUtils');
 const randomUtils = require('./randomUtils');
 const timeUtils = require('./timeUtils');
@@ -15,7 +14,6 @@ module.exports = {
   ...reportUtils,
   ...orderUtils,
   ...ipUtils,
-  ...linePayUtils,
   ...printUtils,
   ...randomUtils,
   ...timeUtils,

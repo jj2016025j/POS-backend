@@ -2,13 +2,13 @@
 const { DataTypes, Model } = require('sequelize');
 
 class MenuItem extends Model {
-    // static associate(models) {
-    //     MenuItem.belongsToMany(models.SubOrder, {
-    //         through: models.SubOrderItems, // 使用聯結表
-    //         foreignKey: 'MenuItemId',
-    //         otherKey: 'SubOrderId'
-    //     });
-    // }
+    static associate(models) {
+        MenuItem.belongsToMany(models.SubOrder, {
+            through: models.SubOrderItems, // 使用聯結表
+            foreignKey: 'MenuItemId',
+            otherKey: 'SubOrderId'
+        });
+    }
 }
 
 MenuItem.initModel = (sequelize) => {
