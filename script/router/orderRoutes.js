@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const { createMainOrder, getMainOrderInfo, getRecentOrders, editMainOrder } = require('../controllers/mainOrderController');
-const { createSubOrder, deleteSubOrderItem, getSubOrderInfo, editSubOrder } = require('../controllers/subOrderController');
+const { createSubOrder, deleteSubOrder, getSubOrderInfo, editSubOrder } = require('../controllers/subOrderController');
 const { getAllTableInfo, updateTableInfo } = require('../controllers/tableController');
 const { printQRCode } = require('../controllers/printerController');
 
@@ -22,7 +22,7 @@ router.post('/printQRcode', printQRCode);
 router.post('/createSubOrder', createSubOrder);
 router.get('/getSubOrderInfo', getSubOrderInfo);
 router.post('/editSubOrder', editSubOrder);
-router.post('/deleteSubOrderItem', deleteSubOrderItem);
+router.post('/deleteSubOrder', deleteSubOrder);
 
 
 module.exports = router;

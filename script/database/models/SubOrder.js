@@ -3,12 +3,12 @@ const { DataTypes, Model } = require('sequelize');
 
 class SubOrder extends Model {
     static associate(models) {
-        // 設置多對多關聯，通過 SubOrderItems 作為聯結表
-        SubOrder.belongsToMany(models.MenuItem, {
-            through: models.SubOrderItem, // 使用聯結表
-            foreignKey: 'subOrderId',
-            otherKey: 'menuItemId'
-        });
+        // SubOrder.belongsToMany(models.MenuItem, {
+        //     through: models.SubOrderItems, // 使用聯結表
+        //     foreignKey: 'SubOrderId',
+        //     otherKey: 'MenuItemId'
+        // });
+        SubOrder.belongsTo(models.MainOrder, { foreignKey: 'MainOrderId' });
     }
 }
 
@@ -18,7 +18,7 @@ SubOrder.initModel = (sequelize) => {
         SubOrderId: { type: DataTypes.STRING, allowNull: false },
         MainOrderId: { type: DataTypes.STRING, allowNull: false },
         SubTotal: { type: DataTypes.INTEGER, defaultValue: 0 },
-        TableId: { type: DataTypes.INTEGER, allowNull: false },
+        TableId: { type: DataTypes.INTEGER, allowNull: true },
         OrderStatus: { 
             type: DataTypes.ENUM('未製作', '製作中', '已完成', '已取消'), 
             defaultValue: '未製作' 

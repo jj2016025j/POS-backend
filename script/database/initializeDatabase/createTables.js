@@ -4,7 +4,7 @@ const Table = require('../models/Table');
 const MainOrder = require('../models/MainOrder');
 const MainOrderMapping = require('../models/MainOrderMapping');
 const SubOrder = require('../models/SubOrder');
-const SubOrderMapping = require('../models/SubOrderMapping');
+const SubOrderItems = require('../models/SubOrderItems');
 const User = require('../models/User');
 const TableOperationsLog = require('../models/TableOperationsLog');
 
@@ -16,7 +16,7 @@ async function createTables(sequelize) {
   MainOrder.initModel(sequelize);
   MainOrderMapping.initModel(sequelize);
   SubOrder.initModel(sequelize);
-  SubOrderMapping.initModel(sequelize);
+  SubOrderItems.initModel(sequelize);
   User.initModel(sequelize);
   TableOperationsLog.initModel(sequelize);
 
@@ -27,7 +27,7 @@ async function createTables(sequelize) {
   Table.hasMany(MainOrder, { foreignKey: 'TableId' });
   MainOrder.belongsTo(Table, { foreignKey: 'TableId' });
 
-  await sequelize.sync({ alter: true });
+  await sequelize.sync({ alter: true, force: true });
   console.log('\n所有表格已同步');
 }
 

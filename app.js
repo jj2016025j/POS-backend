@@ -31,8 +31,8 @@ initializeDatabase().then(() => {
     require('./script/router')(app);
 
     // 6. 加載錯誤處理中間件
-    // const errorHandler = require('./script/utils/errorHandler');
-    // app.use(errorHandler);
+    const { errorHandler } = require('./script/utils/errorHandler');
+    app.use(errorHandler);
 
     // 7. 啟動伺服器
     require('./script/server')(app, port);

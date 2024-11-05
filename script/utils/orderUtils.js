@@ -3,11 +3,19 @@ const fileUtils = require('./fileUtils'); // 假設用於文件上傳的工具
 
 const orderUtils = {
     /**
-     * 生成唯一的訂單 ID
-     * @returns {string} 訂單 ID
+     * 生成唯一的主訂單 ID
+     * @returns {string} 主訂單 ID
      */
-    generateOrderId() {
-        return 'ORD' + Date.now() + Math.random().toString(36).substring(2, 15);
+    generateMainOrderId() {
+        return 'MAIN' + Date.now() + Math.random().toString(36).substring(2, 10);
+    },
+
+    /**
+     * 生成唯一的子訂單 ID
+     * @returns {string} 子訂單 ID
+     */
+    generateSubOrderId() {
+        return 'SUB' + Date.now() + Math.random().toString(36).substring(2, 10);
     },
 
     /**
@@ -15,7 +23,7 @@ const orderUtils = {
      * @returns {string} 交易編號
      */
     generateTradeNo() {
-        return 'ORD' + Date.now() + Math.random().toString(36).substring(4);
+        return 'TRADE' + Date.now() + Math.random().toString(36).substring(4);
     },
 
     /**

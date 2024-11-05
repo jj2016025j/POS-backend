@@ -1,14 +1,25 @@
 // models/Category.js
 const { DataTypes, Model } = require('sequelize');
 
-class Category extends Model {}
+class Category extends Model { }
 
 Category.initModel = (sequelize) => {
   Category.init({
-    Id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
-    CategoryName: { type: DataTypes.STRING, allowNull: false },
+    Id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true
+    },
+    CategoryName: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true
+    },
     Description: DataTypes.TEXT,
-    sort: { type: DataTypes.INTEGER, defaultValue: 0 },
+    sort: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0
+    },
   }, {
     sequelize,
     modelName: 'Category',

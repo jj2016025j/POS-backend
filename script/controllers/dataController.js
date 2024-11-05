@@ -23,6 +23,8 @@ const getDataReport = async (req, res, next) => {
                 }
             ],
             attributes: [
+                // 分隔改成周月
+
                 [fn('SUM', col('SubOrderItems.quantity')), 'salesQuantity'], // 計算銷售數量
                 [fn('SUM', fn('MULTIPLY', col('SubOrderItems.quantity'), col('SubOrderItems.price'))), 'sales'] // 計算總銷售額
             ],
