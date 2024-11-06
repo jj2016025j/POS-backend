@@ -16,7 +16,7 @@ module.exports = {
             console.log(`Printing QR code for Table ${MainOrderId} with URL: ${fullUrl}`);
 
             // 回應成功訊息
-            res.status(200).json({ message: "QR Code printed successfully", qrCodeUrl: fullUrl });
+            res.status(200).json({ qrCodeUrl: fullUrl });
         } catch (error) {
             console.error("Failed to print QR Code:", error);
             res.status(500).json({ message: "Failed to print QR Code" });

@@ -16,10 +16,6 @@ Category.initModel = (sequelize) => {
       unique: true
     },
     Description: DataTypes.TEXT,
-    sort: {
-      type: DataTypes.INTEGER,
-      defaultValue: 0
-    },
   }, {
     sequelize,
     modelName: 'Category',

@@ -19,8 +19,8 @@ SubOrder.initModel = (sequelize) => {
         SubTotal: { type: DataTypes.INTEGER, defaultValue: 0 },
         TableId: { type: DataTypes.INTEGER, allowNull: true },
         OrderStatus: {
-            type: DataTypes.ENUM('未製作', '製作中', '已完成', '已取消'),
-            defaultValue: '未製作'
+            type: DataTypes.ENUM('無餐點', '製作中', '已完成', '已取消'),
+            defaultValue: '無餐點'
         },
         CreateTime: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
         UpdateTime: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },

@@ -9,11 +9,11 @@ class Table extends Model {
 
 Table.initModel = (sequelize) => {
   Table.init({
-    Id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
     TableNumber: { 
       type: DataTypes.INTEGER, 
       allowNull: false, 
-      unique: true
+      unique: true,
+      primaryKey: true
     },
     TablesStatus: { 
       type: DataTypes.ENUM('空桌', '點餐中', '製作中', '用餐中', '清潔中'), 
