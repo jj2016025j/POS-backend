@@ -29,5 +29,27 @@ module.exports = {
             { TablesStatus: status, MainOrderId: null },
             { where: { TableNumber: tableNumber } }
         );
+    },
+
+    async resetAllTables() {
+        // 將所有桌位的狀態設為空桌，並清空訂單
+        return await Table.update(
+            { TablesStatus: '空桌', MainOrderId: null },
+            { where: {} } // 沒有條件，會更新所有桌位
+        );
+    },
+
+    async resetTableByOrder(TableId) {
+        return await Table.update(
+            { TablesStatus: '空桌', MainOrderId: null },
+            { where: { Id: TableId } }
+        );
+    },
+
+    async updateTableStatus(TableId, status) {
+        return await Table.update(
+            { TablesStatus: status },
+            { where: { Id: TableId } }
+        );
     }
 };

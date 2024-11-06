@@ -50,5 +50,15 @@ module.exports = {
             console.error("Error in cleanTable:", error);
             res.status(500).json({ message: '清潔桌位失敗', error });
         }
-    }
+    },
+
+    async resetAllTable(req, res, next) {
+        try {
+            const result = await tableService.resetAllTable();
+            res.status(200).json({ message: "所有桌位已重置", result });
+        } catch (error) {
+            console.error("Error in resetAllTable:", error);
+            res.status(500).json({ message: "重置桌位失敗", error });
+        }
+    },
 };

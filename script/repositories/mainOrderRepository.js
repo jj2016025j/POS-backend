@@ -8,9 +8,8 @@ module.exports = {
             OrderStatus: '未結帳'
         });
     },
-
-    async findMainOrderById(MainOrderId) {
-        return await MainOrder.findOne({ where: { MainOrderId } });
+    async findOrderById(MainOrderId) {
+        return await MainOrder.findByPk(MainOrderId);
     },
 
     async updateOrderStatus(MainOrderId, OrderStatus, UserId) {

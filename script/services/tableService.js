@@ -20,5 +20,10 @@ module.exports = {
 
     async cleanTable(tableNumber, status) {
         return await tableRepository.resetTableStatus(tableNumber, status);
-    }
+    },
+
+    async resetAllTable() {
+        // 調用 Repository 層的重置方法
+        return await tableRepository.resetAllTables();
+    },
 };

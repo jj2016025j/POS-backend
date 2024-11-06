@@ -23,6 +23,10 @@ module.exports = {
         return null;
     },
 
+    async findSubOrderById(subOrderId) {
+        return await SubOrder.findByPk(subOrderId);
+    },
+
     async editSubOrder({ subOrderId, OrderStatus, MenuItems }) {
         if (OrderStatus) {
             await SubOrder.update({ OrderStatus }, { where: { SubOrderId: subOrderId } });
