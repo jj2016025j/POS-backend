@@ -16,7 +16,7 @@ async function insertDefaultData(sequelize) {
     { MenuItemName: '大白菜', CategoryId: 3, Price: 50 },
   ];
 
-  const tables = Array.from({ length: 10 }, (_, i) => ({
+  const tables = Array.from({ length: 30 }, (_, i) => ({
     TableNumber: i + 1,
     TablesStatus: '空桌'
   }));

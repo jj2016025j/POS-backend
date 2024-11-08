@@ -1,7 +1,7 @@
 const { Table, MainOrder } = require('../database/models');
 
 module.exports = {
-    async findAllTables(limit = 10) {
+    async findAllTables(limit = 100) {
         return await Table.findAll({ limit });
     },
 

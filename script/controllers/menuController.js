@@ -1,6 +1,4 @@
 // controllers/menuController.js
-const { MenuItem, Category } = require('../database/models');
-const { validateCreateMenuItem, validateEditMenuItem, validateDeleteMenuItem } = require('../validators/menuItemValidator');
 const menuService = require('../services/menuService');
 
 const getAllMenuItems = async (req, res, next) => {
@@ -39,9 +37,19 @@ const deleteMenuItem = async (req, res, next) => {
     }
 };
 
+const getAllCategories = async (req, res, next) => {
+    try {
+        const categories = await menuService.getAllCategories();
+        res.status(200).json(categories);
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     getAllMenuItems,
     addNewMenuItem,
     editMenuItem,
-    deleteMenuItem
+    deleteMenuItem,
+    getAllCategories
 };

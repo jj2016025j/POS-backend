@@ -27,5 +27,9 @@ module.exports = {
 
         const deletedRows = await menuRepository.deleteMenuItem(menuItemId);
         if (deletedRows === 0) throw new Error("未找到需要刪除的記錄");
+    },
+
+    async getAllCategories() {
+        return await menuRepository.getAllCategories();
     }
 };

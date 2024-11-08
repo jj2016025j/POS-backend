@@ -36,5 +36,11 @@ module.exports = {
 
     async deleteMenuItem(menuItemId) {
         return await MenuItem.destroy({ where: { Id: menuItemId } });
-    }
+    },
+
+    async getAllCategories() {
+        return await Category.findAll({
+            attributes: ['Id', 'CategoryName', 'Description'] // 僅選擇必要的欄位
+        });
+    },
 };
