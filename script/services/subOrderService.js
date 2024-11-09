@@ -45,7 +45,13 @@ module.exports = {
         if (error) {
             throw new Error(error.details[0].message);
         }
-        return await subOrderRepository.editSubOrder(value);
+        
+        const updatedSubOrder = await subOrderRepository.editSubOrder(value);
+
+        // 更新總額
+        await this.updateTotalAmount(value.subOrderId);
+
+        return updatedSubOrder;
     },
 
     async deleteSubOrder(subOrderId) {
@@ -53,7 +59,14 @@ module.exports = {
         if (error) {
             throw new Error(error.details[0].message);
         }
-        return await subOrderRepository.deleteSubOrder(subOrderId);
+
+        const deletedSubOrder = await subOrderRepository.deleteSubOrder(subOrderId);
+
+        if (deletedSubOrder) {
+            await this.updateTotalAmount(subOrderId);
+        }
+
+        return deletedSubOrder;
     },
     
     async cancelSubOrder(subOrderId) {
@@ -83,5 +96,10 @@ module.exports = {
         order.status = status;
         await order.save();
         return order;
+    },
+
+    async updateTotalAmount(subOrderId) {
+        const totalAmount = await subOrderRepository.calculateTotalAmount(subOrderId);
+        await subOrderRepository.updateSubOrderTotal(subOrderId, totalAmount);
     }
 };

@@ -4,10 +4,11 @@ const { DataTypes, Model } = require('sequelize');
 class MenuItem extends Model {
     static associate(models) {
         MenuItem.belongsToMany(models.SubOrder, {
-            through: models.SubOrderItems, // 使用聯結表
+            through: models.SubOrderItems,
             foreignKey: 'MenuItemId',
             otherKey: 'SubOrderId'
         });
+        MenuItem.hasMany(models.SubOrderItems, { foreignKey: 'MenuItemId' });
     }
 }
 
@@ -27,7 +28,7 @@ MenuItem.initModel = (sequelize) => {
             type: DataTypes.INTEGER,
             allowNull: false
         },
-        Price: {
+        price: {
             type: DataTypes.INTEGER,
             allowNull: false
         },

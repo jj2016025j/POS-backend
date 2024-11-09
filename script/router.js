@@ -8,6 +8,7 @@ const mainOrderRoutes = require('./router/mainOrderRoutes');
 const subOrderRoutes = require('./router/subOrderRoutes');
 const paymentRoutes = require('./router/paymentRoutes');
 const dataRoutes = require('./router/dataRoutes');
+const printerRoutes = require('./router/printerRoutes');
 const testRoutes = require('./router/testRoutes');
 
 module.exports = (app) => {
@@ -31,5 +32,6 @@ module.exports = (app) => {
     app.use('/subOrder', subOrderRoutes);
     app.use('/pay', paymentRoutes);
     app.use('/data', dataRoutes);
+    app.use('/printer', printerRoutes);
     app.use('/test', testRoutes);
 };

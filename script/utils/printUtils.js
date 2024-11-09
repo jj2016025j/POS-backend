@@ -1,7 +1,7 @@
 // utils/printUtils.js
 // const somePrinterLibrary = require('some-printer-library');  // 假設打印機庫
 
-async function printOrderWithQR(url, mainOrderId, tableNumber) {
+async function printMainOrder(url, mainOrderId, tableNumber) {
     try {
         // await somePrinterLibrary.printQRCode(url, mainOrderId, tableNumber);
     } catch (error) {
@@ -19,4 +19,4 @@ async function printOrder(orderData) {
     }
 }
 
-module.exports = { printOrderWithQR, printOrder };
+module.exports = { printMainOrder, printOrder };

@@ -1,10 +1,17 @@
-// printOrderWithQR.js
+// printMainOrder.js
 const escpos = require('escpos');
 const qr = require('qr-image');
 const { getLocalIPAddress } = require('../utils');
 const LocalIP = getLocalIPAddress();
 
-function printOrderWithQR(printer, device, url = `http://${LocalIP}:3000/pos`, orderNumber = 1, tableNumber = 1, contents = []) {
+function printMainOrder(
+    printer,
+    device,
+    url = `http://${LocalIP}:3000/pos`,
+    orderNumber = 1,
+    tableNumber = 1,
+    contents = []
+) {
     const qrContent = `${url}`;
     const qrCode = qr.imageSync(qrContent, { type: 'png', size: 10 });
 
@@ -20,11 +27,11 @@ function printOrderWithQR(printer, device, url = `http://${LocalIP}:3000/pos`, o
             .text('Fang Food 芳鍋')
             .text(`桌號: ${tableNumber}`)
             .text(`訂單編號: ${orderNumber}`)
-            .qrimage(qrContent, { type: 'png', size: 5 }, function() {
+            .qrimage(qrContent, { type: 'png', size: 5 }, function () {
                 contents.forEach(content => this.text(content));
                 this.feed(2).cut().close();
             });
     });
 }
 
-module.exports = printOrderWithQR;
+module.exports = printMainOrder;

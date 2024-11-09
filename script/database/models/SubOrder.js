@@ -9,6 +9,7 @@ class SubOrder extends Model {
             otherKey: 'MenuItemId'
         });
         SubOrder.belongsTo(models.MainOrder, { foreignKey: 'MainOrderId' });
+        SubOrder.hasMany(models.SubOrderItems, { foreignKey: 'SubOrderId' });
     }
 }
 

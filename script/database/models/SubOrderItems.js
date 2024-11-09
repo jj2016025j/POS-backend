@@ -1,7 +1,13 @@
 // models/SubOrderItems.js
 const { DataTypes, Model } = require('sequelize');
 
-class SubOrderItems extends Model {}
+class SubOrderItems extends Model {
+    static associate(models) {
+        // SubOrderItems 關聯到 MenuItem 和 SubOrder
+        SubOrderItems.belongsTo(models.MenuItem, { foreignKey: 'MenuItemId' });
+        SubOrderItems.belongsTo(models.SubOrder, { foreignKey: 'SubOrderId' });
+    }
+}
 
 SubOrderItems.initModel = (sequelize) => {
     SubOrderItems.init({

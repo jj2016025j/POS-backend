@@ -4,7 +4,7 @@ const { initiateLinePayTransaction, confirmLinePayTransaction } = require('../ut
 
 module.exports = {
     async processCheckout(MainOrderId, method) {
-        const mainOrder = await mainOrderRepository.findOrderById(MainOrderId);
+        const mainOrder = await mainOrderRepository.findMainOrderById(MainOrderId);
         if (!mainOrder) throw new Error(`訂單 ${MainOrderId} 不存在`);
 
         mainOrder.OrderStatus = "已結帳";
@@ -23,7 +23,7 @@ module.exports = {
     async confirmLinePay(transactionId, MainOrderId) {
         await confirmLinePayTransaction(transactionId, MainOrderId);
 
-        const mainOrder = await mainOrderRepository.findOrderById(MainOrderId);
+        const mainOrder = await mainOrderRepository.findMainOrderById(MainOrderId);
         if (mainOrder) {
             mainOrder.OrderStatus = "已結帳";
             await mainOrder.save();
@@ -35,7 +35,7 @@ module.exports = {
     },
 
     async cancelCheckout(MainOrderId) {
-        const mainOrder = await mainOrderRepository.findOrderById(MainOrderId);
+        const mainOrder = await mainOrderRepository.findMainOrderById(MainOrderId);
         if (!mainOrder || mainOrder.OrderStatus !== "已結帳") {
             throw new Error(`訂單 ${MainOrderId} 還未結帳`);
         }

@@ -20,7 +20,7 @@ module.exports = {
 
         await tableRepository.updateTableInfo(TableNumber, '點餐中', mainOrderId);
 
-        return { status: 'success', data: newOrder };
+        return newOrder;
     },
 
     async getMainOrderInfo(MainOrderId) {

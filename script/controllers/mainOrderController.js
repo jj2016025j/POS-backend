@@ -3,18 +3,18 @@ const mainOrderService = require('../services/mainOrderService');
 module.exports = {
     async createMainOrder(req, res, next) {
         try {
-            const result = await mainOrderService.createMainOrder(req.body);
+            const mainOrder = await mainOrderService.createMainOrder(req.body);
             
-            if (result.status === 'error') {
-                return res.status(404).json({ message: result.message });
+            if (mainOrder.status === 'error') {
+                return res.status(404).json({ message: mainOrder.message });
             }
             
-            if (result.status === 'unavailable') {
-                return res.status(400).json({ message: result.message });
+            if (mainOrder.status === 'unavailable') {
+                return res.status(400).json({ message: mainOrder.message });
             }
 
             // 訂單成功建立
-            res.status(200).json(result.data);
+            res.status(200).json(mainOrder);
         } catch (error) {
             console.error("Error in createMainOrder:", error);
             next(error);
