@@ -1,15 +1,15 @@
 // index.js
 const { printer, device } = require('./printer');
 const printMainOrder = require('./printMainOrder');
-const printOrder = require('./printOrder');
+const printSubOrder = require('./printSubOrder');
 const printInvoice = require('./printInvoice');
 
 module.exports = {
-    printMainOrder: (url, orderNumber, tableNumber, contents) => {
-        printMainOrder(printer, device, url, orderNumber, tableNumber, contents)
+    printMainOrder: (mainOrder) => {
+        printMainOrder(printer, device, mainOrder, url, orderNumber, tableNumber, contents)
     },
-    printOrder: (order) => {
-        printOrder(printer, device, order)
+    printSubOrder: (subOrder) => {
+        printSubOrder(printer, device, subOrder)
     },
     printInvoice: (invoiceData) => {
         printInvoice(printer, device, invoiceData)

@@ -1,6 +1,7 @@
 // services/printService.js
 const mainOrderRepository = require('../repositories/mainOrderRepository');
 const subOrderRepository = require('../repositories/subOrderRepository');
+const { printMainOrder, printSubOrder, printInvoice } = require('../printer');
 
 module.exports = {
     async printMainOrder(mainOrderId) {
@@ -9,6 +10,7 @@ module.exports = {
         if (!mainOrder) throw new Error(`主訂單 ${mainOrderId} 不存在`);
 
         // 傳給打印方法
+        // printMainOrder(mainOrder)
 
         return mainOrder;
     },
@@ -22,7 +24,7 @@ module.exports = {
         const SubTotal = subOrder.MenuItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
         // 構建打印數據
-        const printDataObj = {
+        const printsubOrder = {
             ...subOrder,
             MenuItems: subOrder.MenuItems.map(menuItem => ({
                 ...menuItem,
@@ -32,8 +34,9 @@ module.exports = {
         };
 
         // 傳給打印方法
+        // printSubOrder(printsubOrder)
 
-        return printDataObj;
+        return printsubOrder;
     },
 
     async printInvoice(mainOrderId) {
@@ -80,6 +83,7 @@ module.exports = {
         };
 
         // 傳給打印方法
+        // printInvoice(invoiceData)
 
         return invoiceData;
     }

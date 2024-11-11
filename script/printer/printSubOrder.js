@@ -1,7 +1,8 @@
-// printOrder.js
-function printOrder(printer, device, order) {
+// printSubOrder.js
+function printSubOrder(printer, device, subOrder) {
     const title = "FangFood 芳鍋";
     const menuHeader = "名稱  單價 數量 總金額";
+    const formattedDate = subOrder.orderDate.replace('T', ' ').substring(0, 19).replace(/-/g, '.');
 
     device.open(error => {
         if (error) {
@@ -14,20 +15,20 @@ function printOrder(printer, device, order) {
             .align('lt')
             .size(1, 1)
             .text(title)
-            .text(`訂單編號: ${order.orderNumber}`)
-            .text(`下單日期: ${order.orderDate}`)
+            .text(`訂單編號: ${subOrder.SubOrderId}`)
+            .text(`下單日期: ${formattedDate}`)
             .text('菜單:')
             .size(0, 0)
             .text(menuHeader)
             .feed(1);
 
         // 選擇一
-        order.items.forEach(item => {
+        subOrder.items.forEach(item => {
             printer.text(`${item.name}  ${item.price}  ${item.quantity}  ${item.totalPrice}`).feed(1);
         });
 
         // 選擇二
-        order.items.forEach(item => {
+        subOrder.items.forEach(item => {
             const itemText = `${item.name.padEnd(10)} ${item.price.toFixed(2).padStart(6)}  ${String(item.quantity).padStart(3)}  ${item.totalPrice.toFixed(2).padStart(8)}`;
             printer.text(itemText).feed(1);
         });
@@ -36,4 +37,4 @@ function printOrder(printer, device, order) {
     });
 }
 
-module.exports = printOrder;
+module.exports = printSubOrder;
