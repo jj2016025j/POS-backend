@@ -1,14 +1,15 @@
 // printSubOrder.js
-function printSubOrder(printer, device, subOrder) {
-    const title = "FangFood 芳鍋";
-    const menuHeader = "名稱  單價 數量 總金額";
-    const formattedDate = subOrder.orderDate.replace('T', ' ').substring(0, 19).replace(/-/g, '.');
+const { connectAndPrint } = require('./printer');
 
-    device.open(error => {
-        if (error) {
-            console.error('無法連接到打印機:', error);
-            return;
-        }
+function formatDate(isoDate) {
+  return isoDate.replace('T', ' ').substring(0, 19).replace(/-/g, '.');
+}
+
+function printSubOrder(subOrder) {
+    connectAndPrint((printer) => {
+      const title = "FangFood 芳鍋";
+      const menuHeader = "名稱  單價 數量 總金額";
+      const formattedDate = formatDate(subOrder.CreateTime);
 
         printer
             .font('a')

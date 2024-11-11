@@ -2,27 +2,27 @@ const InvoiceModules = require('./invoiceModules.js');
     
     function splitItemsForQRCode(items) {
         const leftQRCodeItems = items.slice(0, 1); // 只取第一個品項給左方 QR Code
-        const rightQRCodeItems = items.slice(1, 30);   // 剩下的品項給右方 QR Code
+        const rightQRCodeItems = items.slice(1, 50);   // 剩下的品項給右方 QR Code
         return { leftQRCodeItems, rightQRCodeItems };
     }
 
 module.exports = {
 
-    generateLeftQRCode(items = []) {
+    generateLeftQRCode(invoiceData) {
         const invoiceNumber = InvoiceModules.generateInvoiceNumber();       // 發票字軌號碼 (10 碼)
         const invoiceDate = InvoiceModules.formatInvoiceDate();             // 發票開立日期 (7 碼)
         const randomCode = InvoiceModules.generateRandomCode();             // 隨機碼 (4 碼)
-        const salesAmountHex = InvoiceModules.convertToHexAmount(100);         // 銷售額 (8 碼十六進位)
-        const totalAmountHex = InvoiceModules.convertTotalAmountToHex(105);    // 總計額 (8 碼十六進位)
+        const salesAmountHex = InvoiceModules.convertToHexAmount(invoiceData.Total);         // 銷售額 (8 碼十六進位)
+        const totalAmountHex = InvoiceModules.convertTotalAmountToHex(invoiceData.Total);    // 總計額 (8 碼十六進位)
         const buyerId = InvoiceModules.formatBuyerId();                     // 買方統一編號 (8 碼)
         const sellerId = InvoiceModules.formatSellerId();                   // 賣方統一編號 (8 碼)
         const encryptedInfo = InvoiceModules.encryptVerificationInfo(invoiceNumber, randomCode);  // 加密驗證資訊 (24 碼)
         const customArea = InvoiceModules.generateCustomUseArea();          // 營業人自行使用區 (10 碼)
-        const itemCount = InvoiceModules.getBarcodeItemCount(10);             // 二維條碼記載完整品目筆數
-        const totalItemCount = InvoiceModules.getTotalItemCount(20);          // 該張發票交易品目總筆數
+        const itemCount = InvoiceModules.getBarcodeItemCount(invoiceData.items.length);             // 二維條碼記載完整品目筆數
+        const totalItemCount = InvoiceModules.getTotalItemCount(invoiceData.items.length);          // 該張發票交易品目總筆數
         const encodingParameter = InvoiceModules.getEncodingParameter();    // 中文編碼參數
 
-        const { leftQRCodeItems } = splitItemsForQRCode(items);
+        const { leftQRCodeItems } = splitItemsForQRCode(invoiceData.items);
 
         const itemName = InvoiceModules.validateItemName(leftQRCodeItems[0].name);  // 品名
         const quantity = InvoiceModules.getQuantity(leftQRCodeItems[0].quantity);   // 數量
@@ -43,8 +43,8 @@ module.exports = {
         return leftQRCodeString;
     },
 
-    generateRightQRCode(items) {
-        const { rightQRCodeItems } = splitItemsForQRCode(items);
+    generateRightQRCode(invoiceData) {
+        const { rightQRCodeItems } = splitItemsForQRCode(invoiceData.items);
         const startSymbol = "**";
         const content = rightQRCodeItems.map(item =>
             `${item.name}:${item.quantity}:${item.price}`

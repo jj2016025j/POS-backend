@@ -10,7 +10,7 @@ module.exports = {
         if (!mainOrder) throw new Error(`主訂單 ${mainOrderId} 不存在`);
 
         // 傳給打印方法
-        // printMainOrder(mainOrder)
+        printMainOrder(mainOrder)
 
         return mainOrder;
     },
@@ -34,7 +34,7 @@ module.exports = {
         };
 
         // 傳給打印方法
-        // printSubOrder(printsubOrder)
+        printSubOrder(printsubOrder)
 
         return printsubOrder;
     },
@@ -83,7 +83,7 @@ module.exports = {
         };
 
         // 傳給打印方法
-        // printInvoice(invoiceData)
+        printInvoice(invoiceData)
 
         return invoiceData;
     }

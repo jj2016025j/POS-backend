@@ -3,7 +3,7 @@ const checkoutService = require('../services/checkoutService');
 module.exports = {
     async cashCheckout(req, res) {
         try {
-            const result = await checkoutService.processCheckout(req.body.MainOrderId, 'cash');
+            const result = await checkoutService.processCheckout(req.body.MainOrderId);
             res.status(200).json(result);
         } catch (error) {
             console.error("現金結帳失敗:", error);
@@ -13,7 +13,7 @@ module.exports = {
 
     async creditCardCheckout(req, res) {
         try {
-            const result = await checkoutService.processCheckout(req.body.MainOrderId, 'creditCard');
+            const result = await checkoutService.creditCardCheckout(req.body.MainOrderId);
             res.status(200).json(result);
         } catch (error) {
             console.error("信用卡結帳失敗:", error);
@@ -33,7 +33,7 @@ module.exports = {
 
     async confirmLinePay(req, res) {
         try {
-            const result = await checkoutService.confirmLinePay(req.body.transactionId, req.body.MainOrderId);
+            const result = await checkoutService.confirmLinePay(req.body.SubOrderId, req.body.MainOrderId);
             res.status(200).json(result);
         } catch (error) {
             console.error("確認 Line Pay 支付失敗:", error);

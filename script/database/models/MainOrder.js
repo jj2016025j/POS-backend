@@ -42,6 +42,11 @@ MainOrder.initModel = (sequelize) => {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW
     },
+    PaymentMethod: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW
+    },
+    
     UserId: DataTypes.INTEGER,
   }, {
     sequelize,
