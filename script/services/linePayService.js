@@ -15,7 +15,6 @@ const {
     LINEPAY_RETURN_CANCEL_URL,
 } = process.env;
 
-const pool = require('../database');
 function createLinePayBody(order) {
     return {
         ...order,
@@ -26,6 +25,12 @@ function createLinePayBody(order) {
         },
     };
 }
+
+const getSignature = (uri, body) => {
+    const nonce = Date.now().toString();
+    const encryptText = `${LINEPAY_CHANNEL_SECRET_KEY}/${LINEPAY_VERSION}${uri}${JSON.stringify(body)}${nonce}`;
+    return Base64.stringify(hmacSHA256(encryptText, LINEPAY_CHANNEL_SECRET_KEY));
+};
 
 function createSignature(uri, linePayBody) {
     const nonce = new Date().getTime();
@@ -71,6 +76,39 @@ async function confirmPayment(transactionId, orderId) {
     }
 }
 
+async function initiateLinePayTransaction(id) {
+    const uri = "/v3/payments/request";
+    const body = {
+        amount: 100,
+        currency: "TWD",
+        orderId: id,
+        packages: [{ id: "testPackage", amount: 100, name: "Test Product" }],
+        redirectUrls: {
+            confirmUrl: LINEPAY_RETURN_CONFIRM_URL,
+            cancelUrl: LINEPAY_RETURN_CANCEL_URL,
+        },
+    };
+
+    const response = await axios.post(`${LINEPAY_SITE}${uri}`, body, { headers });
+    return response.data.info.paymentUrl.web;
+}
+
+async function confirmLinePayTransaction(transactionId, orderId) {
+    const uri = `/v3/payments/${transactionId}/confirm`;
+    const body = {
+        amount: 100,
+        currency: "TWD",
+    };
+
+    const headers = {
+        "Content-Type": "application/json",
+        "X-LINE-ChannelId": LINEPAY_CHANNEL_ID,
+        "X-LINE-Authorization-Nonce": Date.now().toString(),
+        "X-LINE-Authorization": getSignature(uri, body),
+    };
+
+    await axios.post(`${LINEPAY_SITE}${uri}`, body, { headers });
+}
 module.exports = {
     initiatePayment,
     confirmPayment

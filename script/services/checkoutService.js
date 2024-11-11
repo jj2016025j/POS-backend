@@ -4,6 +4,7 @@ const { initiateLinePayTransaction, confirmLinePayTransaction } = require('../ut
 
 module.exports = {
     async processCheckout(MainOrderId) {
+        
         const mainOrder = await mainOrderRepository.findMainOrderById(MainOrderId);
         if (!mainOrder) throw new Error(`訂單 ${MainOrderId} 不存在`);
 
@@ -17,6 +18,7 @@ module.exports = {
     },
 
     async creditCardCheckout(MainOrderId) {
+
         const mainOrder = await mainOrderRepository.findMainOrderById(MainOrderId);
         if (!mainOrder) throw new Error(`訂單 ${MainOrderId} 不存在`);
 
@@ -36,7 +38,7 @@ module.exports = {
         return mainOrder;
     },
 
-    async cancelTransaction(transactionId) {
+    async cancelTransaction(MainOrderId) {
         // 模擬建立連接
         const connection = await establishConnection();
         if (!connection) {
@@ -44,7 +46,7 @@ module.exports = {
         }
 
         // 發送取消請求
-        const cancelResponse = await connection.sendCancelRequest(transactionId);
+        const cancelResponse = await connection.sendCancelRequest(MainOrderId);
         if (!cancelResponse.success) {
             return { status: 'failure', errorMessage: cancelResponse.error };
         }
@@ -53,21 +55,26 @@ module.exports = {
     },
 
     async initiateLinePay(MainOrderId) {
-        return await initiateLinePayTransaction(MainOrderId);
+        const mainOrder = await mainOrderRepository.findMainOrderById(MainOrderId);
+        return await initiateLinePayTransaction(mainOrder);
     },
 
-    async confirmLinePay(transactionId, MainOrderId) {
-        await confirmLinePayTransaction(transactionId, MainOrderId);
-
+    async confirmLinePay(MainOrderId) {
+        // 確認支付
         const mainOrder = await mainOrderRepository.findMainOrderById(MainOrderId);
-        if (mainOrder) {
-            mainOrder.OrderStatus = "已結帳";
-            await mainOrder.save();
+        const confirmationResult = await linePayService.confirmPayment(mainOrder);
+
+        await confirmLinePayTransaction(MainOrderId);
+
+        const newMainOrder = await mainOrderRepository.findMainOrderById(MainOrderId);
+        if (newMainOrder) {
+            newMainOrder.OrderStatus = "已結帳";
+            await newMainOrder.save();
 
             // 清空桌位
-            await tableRepository.resetTableByOrder(mainOrder.TableId);
+            await tableRepository.resetTableByOrder(newMainOrder.TableId);
         }
-        return mainOrder;
+        return newMainOrder;
     },
 
     async cancelCheckout(MainOrderId) {

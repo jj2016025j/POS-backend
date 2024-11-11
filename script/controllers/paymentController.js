@@ -33,7 +33,7 @@ module.exports = {
 
     async confirmLinePay(req, res) {
         try {
-            const result = await checkoutService.confirmLinePay(req.body.SubOrderId, req.body.MainOrderId);
+            const result = await checkoutService.confirmLinePay(req.body.transactionId, req.body.MainOrderId);
             res.status(200).json(result);
         } catch (error) {
             console.error("確認 Line Pay 支付失敗:", error);
