@@ -38,7 +38,7 @@ module.exports = {
     async printQRCode(req, res) {
         console.log("Received request to print QR code");
 
-        // 模擬接收到的資料，例如 mainOrderId 和 TableNumber
+        // 模擬接收到的資料，例如 mainOrderId 和 tableNumber
         const { mainOrderId } = req.body;
 
         try {

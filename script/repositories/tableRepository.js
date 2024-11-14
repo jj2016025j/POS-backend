@@ -7,13 +7,13 @@ module.exports = {
 
     async updateTableInfo(tableNumber, status, mainOrderId) {
         return await table.update(
-            { TablesStatus: status, mainOrderId: mainOrderId },
-            { where: { TableNumber: tableNumber } }
+            { tablesStatus: status, mainOrderId: mainOrderId },
+            { where: { tableNumber: tableNumber } }
         );
     },
 
     async findTableByNumber(tableNumber) {
-        return await table.findOne({ where: { TableNumber: tableNumber } });
+        return await table.findOne({ where: { tableNumber: tableNumber } });
     },
 
     async findTableByMainOrderId(mainOrderId) {
@@ -26,29 +26,29 @@ module.exports = {
 
     async resetTableStatus(tableNumber, status) {
         return await table.update(
-            { TablesStatus: status, mainOrderId: null },
-            { where: { TableNumber: tableNumber } }
+            { tablesStatus: status, mainOrderId: null },
+            { where: { tableNumber: tableNumber } }
         );
     },
 
     async resetAllTables() {
         // 將所有桌位的狀態設為空桌，並清空訂單
         return await table.update(
-            { TablesStatus: '空桌', mainOrderId: null },
+            { tablesStatus: '空桌', mainOrderId: null },
             { where: {} } // 沒有條件，會更新所有桌位
         );
     },
 
     async resetTableByOrder(tableId) {
         return await table.update(
-            { TablesStatus: '空桌', mainOrderId: null },
+            { tablesStatus: '空桌', mainOrderId: null },
             { where: { id: tableId } }
         );
     },
 
     async updateTableStatus(tableId, status) {
         return await table.update(
-            { TablesStatus: status },
+            { tablesStatus: status },
             { where: { id: tableId } }
         );
     }

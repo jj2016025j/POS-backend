@@ -17,8 +17,8 @@ async function insertDefaultData(sequelize) {
   ];
 
   const tables = Array.from({ length: 30 }, (_, i) => ({
-    TableNumber: i + 1,
-    TablesStatus: '空桌'
+    tableNumber: i + 1,
+    tablesStatus: '空桌'
   }));
 
   await Category.bulkCreate(categories, { ignoreDuplicates: true });
