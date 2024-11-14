@@ -3,7 +3,7 @@ const { DataTypes, Model } = require('sequelize');
 
 class mainOrder extends Model {
   static associate(models) {
-      mainOrder.belongsTo(models.table, { foreignKey: 'tableId' });
+      mainOrder.belongsTo(models.table, { foreignKey: 'tableNumber' });
   }
 }
 
@@ -26,7 +26,7 @@ mainOrder.initModel = (sequelize) => {
       type: DataTypes.INTEGER,
       defaultValue: 0
     },
-    tableId: {
+    tableNumber: {
       type: DataTypes.INTEGER,
       allowNull: false
     },

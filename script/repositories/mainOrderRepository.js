@@ -1,9 +1,9 @@
 const { mainOrder } = require('../database/models');
 
 module.exports = {
-    async createMainOrder(tableId, mainOrderId) {
+    async createMainOrder(tableNumber, mainOrderId) {
         return await mainOrder.create({
-            tableId,
+            tableNumber,
             mainOrderId,
             orderStatus: '未結帳'
         });

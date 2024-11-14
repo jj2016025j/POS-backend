@@ -13,7 +13,7 @@ module.exports = {
         await mainOrder.save();
 
         // 清空桌位
-        await tableRepository.resetTableByOrder(mainOrder.tableId);
+        await tableRepository.resetTableByOrder(mainOrder.tableNumber);
 
         return mainOrder;
     },
@@ -34,7 +34,7 @@ module.exports = {
         await mainOrder.save();
 
         // 清空桌位
-        await tableRepository.resetTableByOrder(mainOrder.tableId);
+        await tableRepository.resetTableByOrder(mainOrder.tableNumber);
 
         return mainOrder;
     },
@@ -74,7 +74,7 @@ module.exports = {
             await newMainOrder.save();
 
             // 清空桌位
-            await tableRepository.resetTableByOrder(newMainOrder.tableId);
+            await tableRepository.resetTableByOrder(newMainOrder.tableNumber);
         }
         return newMainOrder;
     },
@@ -104,7 +104,7 @@ module.exports = {
                 await mainOrder.save();
 
                 // 更新桌位狀態
-                await tableRepository.updateTableStatus(mainOrder.tableId, "用餐中");
+                await tableRepository.updateTableStatus(mainOrder.tableNumber, "用餐中");
             }
             else{
                 throw new Error(`取消訂單失敗: ${error.message}`);

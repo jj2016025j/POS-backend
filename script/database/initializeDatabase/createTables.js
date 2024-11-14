@@ -24,8 +24,8 @@ async function createTables(sequelize) {
   Category.hasMany(menuItem, { foreignKey: 'categoryId' });
   menuItem.belongsTo(Category, { foreignKey: 'categoryId' });
 
-  table.hasMany(mainOrder, { foreignKey: 'tableId' });
-  mainOrder.belongsTo(table, { foreignKey: 'tableId' });
+  table.hasMany(mainOrder, { foreignKey: 'tableNumber' });
+  mainOrder.belongsTo(table, { foreignKey: 'tableNumber' });
 
   await sequelize.sync({});
   // await sequelize.sync({ alter: true, force: true });

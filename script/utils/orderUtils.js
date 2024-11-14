@@ -53,7 +53,7 @@ const orderUtils = {
 
         for (let i = 0; i < orderCount; i++) {
             const orderDate = randomDate(startDate, endDate);
-            const tableId = randomIntFromInterval(1, tableCount);
+            const tableNumber = randomIntFromInterval(1, tableCount);
             let subTotal = 0;
 
             const itemsCount = randomIntFromInterval(itemTypesRange.min, itemTypesRange.max);
@@ -82,7 +82,7 @@ const orderUtils = {
 
             orders.push({
                 mainOrderId,
-                tableId: tableId,
+                tableNumber: tableNumber,
                 subTotal: subTotal,
                 serviceFee: serviceFee,
                 total: total,

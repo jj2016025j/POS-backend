@@ -18,7 +18,7 @@ subOrder.initModel = (sequelize) => {
         subOrderId: { type: DataTypes.STRING, allowNull: false, unique: true, primaryKey: true },
         mainOrderId: { type: DataTypes.STRING, allowNull: false },
         subTotal: { type: DataTypes.INTEGER, defaultValue: 0 },
-        tableId: { type: DataTypes.INTEGER, allowNull: true },
+        tableNumber: { type: DataTypes.INTEGER, allowNull: true },
         orderStatus: {
             type: DataTypes.ENUM('無餐點', '製作中', '已完成', '已取消'),
             defaultValue: '無餐點'

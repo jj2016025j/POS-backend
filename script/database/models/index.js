@@ -37,11 +37,11 @@ menuItem.associate = (models) => {
 };
 
 table.associate = (models) => {
-    table.hasMany(models.mainOrder, { foreignKey: 'tableId' });
+    table.hasMany(models.mainOrder, { foreignKey: 'tableNumber' });
 };
 
 mainOrder.associate = (models) => {
-    mainOrder.belongsTo(models.table, { foreignKey: 'tableId' });
+    mainOrder.belongsTo(models.table, { foreignKey: 'tableNumber' });
     mainOrder.hasMany(models.subOrder, { foreignKey: 'mainOrderId' });
 };
 

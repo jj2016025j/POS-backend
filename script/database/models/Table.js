@@ -3,7 +3,7 @@ const { DataTypes, Model } = require('sequelize');
 
 class table extends Model {
   static associate(models) {
-      table.hasMany(models.mainOrder, { foreignKey: 'tableId' });
+      table.hasMany(models.mainOrder, { foreignKey: 'tableNumber' });
   }
 }
 

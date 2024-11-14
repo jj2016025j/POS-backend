@@ -39,17 +39,17 @@ module.exports = {
         );
     },
 
-    async resetTableByOrder(tableId) {
+    async resetTableByOrder(tableNumber) {
         return await table.update(
             { tablesStatus: '空桌', mainOrderId: null },
-            { where: { id: tableId } }
+            { where: { id: tableNumber } }
         );
     },
 
-    async updateTableStatus(tableId, status) {
+    async updateTableStatus(tableNumber, status) {
         return await table.update(
             { tablesStatus: status },
-            { where: { id: tableId } }
+            { where: { id: tableNumber } }
         );
     }
 };
