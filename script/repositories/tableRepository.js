@@ -1,4 +1,4 @@
-const { Table, MainOrder } = require('../database/models');
+const { Table, mainOrder } = require('../database/models');
 
 module.exports = {
     async findAllTables(limit = 100) {
@@ -7,7 +7,7 @@ module.exports = {
 
     async updateTableInfo(tableNumber, status, mainOrderId) {
         return await Table.update(
-            { TablesStatus: status, MainOrderId: mainOrderId },
+            { TablesStatus: status, mainOrderId: mainOrderId },
             { where: { TableNumber: tableNumber } }
         );
     },
@@ -17,7 +17,7 @@ module.exports = {
     },
 
     async findTableByMainOrderId(mainOrderId) {
-        const mainOrder = await MainOrder.findOne({
+        const mainOrder = await mainOrder.findOne({
             where: { mainOrderId },
             include: [Table],
         });
@@ -26,7 +26,7 @@ module.exports = {
 
     async resetTableStatus(tableNumber, status) {
         return await Table.update(
-            { TablesStatus: status, MainOrderId: null },
+            { TablesStatus: status, mainOrderId: null },
             { where: { TableNumber: tableNumber } }
         );
     },
@@ -34,14 +34,14 @@ module.exports = {
     async resetAllTables() {
         // 將所有桌位的狀態設為空桌，並清空訂單
         return await Table.update(
-            { TablesStatus: '空桌', MainOrderId: null },
+            { TablesStatus: '空桌', mainOrderId: null },
             { where: {} } // 沒有條件，會更新所有桌位
         );
     },
 
     async resetTableByOrder(TableId) {
         return await Table.update(
-            { TablesStatus: '空桌', MainOrderId: null },
+            { TablesStatus: '空桌', mainOrderId: null },
             { where: { Id: TableId } }
         );
     },

@@ -38,16 +38,16 @@ module.exports = {
     async printQRCode(req, res) {
         console.log("Received request to print QR code");
 
-        // 模擬接收到的資料，例如 MainOrderId 和 TableNumber
-        const { MainOrderId } = req.body;
+        // 模擬接收到的資料，例如 mainOrderId 和 TableNumber
+        const { mainOrderId } = req.body;
 
         try {
             // 假設這裡是 QR Code 的生成與打印邏輯 (目前用 console.log 模擬)
-            const fullUrl = `http://localhost:8080/phoneorder/${MainOrderId}`;
+            const fullUrl = `http://localhost:8080/phoneorder/${mainOrderId}`;
             console.log(`Generated QR Code URL: ${fullUrl}`);
 
             // 模擬列印
-            console.log(`Printing QR code for Table ${MainOrderId} with URL: ${fullUrl}`);
+            console.log(`Printing QR code for Table ${mainOrderId} with URL: ${fullUrl}`);
 
             // 回應成功訊息
             res.status(200).json({ qrCodeUrl: fullUrl });

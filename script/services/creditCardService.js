@@ -46,4 +46,10 @@ async function mockSendCancelRequest(transactionId) {
     return { success: true };
 }
 
-module.exports = { processTransaction, mockSendCancelRequest };
+async function cancelTransaction(transactionId) {
+    // 模擬取消交易的邏輯
+    console.log(`取消信用卡交易，交易 ID: ${transactionId}`);
+    // 根據具體的信用卡 API 實現具體邏輯
+    return { success: true };
+}
+module.exports = { processTransaction, mockSendCancelRequest, cancelTransaction };

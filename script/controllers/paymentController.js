@@ -3,7 +3,7 @@ const checkoutService = require('../services/checkoutService');
 module.exports = {
     async cashCheckout(req, res) {
         try {
-            const result = await checkoutService.processCheckout(req.body.MainOrderId);
+            const result = await checkoutService.processCheckout(req.body.mainOrderId);
             res.status(200).json(result);
         } catch (error) {
             console.error("現金結帳失敗:", error);
@@ -13,7 +13,7 @@ module.exports = {
 
     async creditCardCheckout(req, res) {
         try {
-            const result = await checkoutService.creditCardCheckout(req.body.MainOrderId);
+            const result = await checkoutService.creditCardCheckout(req.body.mainOrderId);
             res.status(200).json(result);
         } catch (error) {
             console.error("信用卡結帳失敗:", error);
@@ -21,9 +21,9 @@ module.exports = {
         }
     },
 
-    async initiateLinePay(req, res) {
+    async requestLinePay(req, res) {
         try {
-            const paymentUrl = await checkoutService.initiateLinePay(req.body.MainOrderId);
+            const paymentUrl = await checkoutService.requestLinePay(req.body.oneTimeKey, req.body.mainOrderId);
             res.status(200).json(paymentUrl);
         } catch (error) {
             console.error("發起 Line Pay 支付失敗:", error);
@@ -33,7 +33,7 @@ module.exports = {
 
     async confirmLinePay(req, res) {
         try {
-            const result = await checkoutService.confirmLinePay(req.body.transactionId, req.body.MainOrderId);
+            const result = await checkoutService.confirmLinePay(req.body.transactionId, req.body.mainOrderId);
             res.status(200).json(result);
         } catch (error) {
             console.error("確認 Line Pay 支付失敗:", error);
@@ -43,7 +43,7 @@ module.exports = {
 
     async cancelCheckout(req, res) {
         try {
-            const result = await checkoutService.cancelCheckout(req.body.MainOrderId);
+            const result = await checkoutService.cancelCheckout(req.body.mainOrderId);
             res.status(200).json(result);
         } catch (error) {
             console.error("取消結帳失敗:", error);

@@ -23,21 +23,21 @@ module.exports = {
         return newOrder;
     },
 
-    async getMainOrderInfo(MainOrderId) {
-        if (!MainOrderId) {
-            throw new Error("MainOrderId is required");
+    async getMainOrderInfo(mainOrderId) {
+        if (!mainOrderId) {
+            throw new Error("mainOrderId is required");
         }
-        return await mainOrderRepository.findMainOrderById(MainOrderId);
+        return await mainOrderRepository.findMainOrderById(mainOrderId);
     },
 
     async editMainOrder(data) {
-        const { MainOrderId, OrderStatus, UserId } = data;
+        const { mainOrderId, OrderStatus, UserId } = data;
 
-        if (!MainOrderId || !OrderStatus) {
-            throw new Error("MainOrderId and OrderStatus are required");
+        if (!mainOrderId || !OrderStatus) {
+            throw new Error("mainOrderId and OrderStatus are required");
         }
 
-        return await mainOrderRepository.updateOrderStatus(MainOrderId, OrderStatus, UserId);
+        return await mainOrderRepository.updateOrderStatus(mainOrderId, OrderStatus, UserId);
     },
 
     async getRecentOrders() {

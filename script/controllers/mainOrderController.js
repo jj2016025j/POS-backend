@@ -22,7 +22,7 @@ module.exports = {
     },
     async getMainOrderInfo(req, res, next) {
         try {
-            const mainOrder = await mainOrderService.getMainOrderInfo(req.body.MainOrderId);
+            const mainOrder = await mainOrderService.getMainOrderInfo(req.body.mainOrderId);
             res.status(200).json(mainOrder);
         } catch (error) {
             console.error("Error in getMainOrderInfo:", error);

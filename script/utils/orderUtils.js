@@ -78,10 +78,10 @@ const orderUtils = {
 
             const serviceFee = Math.round(subTotal * 0.1);
             const total = subTotal + serviceFee;
-            const MainOrderId = `ORD-${orderDate.getTime()}-${i}`;
+            const mainOrderId = `ORD-${orderDate.getTime()}-${i}`;
 
             orders.push({
-                MainOrderId,
+                mainOrderId,
                 TableId: tableId,
                 SubTotal: subTotal,
                 ServiceFee: serviceFee,

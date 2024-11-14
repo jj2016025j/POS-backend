@@ -2,7 +2,7 @@
 const Joi = require('joi');
 
 const createSubOrderSchema = Joi.object({
-    MainOrderId: Joi.string().required().messages({
+    mainOrderId: Joi.string().required().messages({
         'string.base': 'mainOrderId 必須為字串',
         'any.required': '必須提供 mainOrderId'
     })

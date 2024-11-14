@@ -21,7 +21,7 @@ if (NODE_ENV === 'production') {
 // 3. 資料庫連接初始化
 const { initializeDatabase } = require('./script/database');
 initializeDatabase().then(() => {
-    console.log("\n資料庫連接成功");
+    console.log("資料庫連接成功\n");
 
     // 4. 設置基本中間件
     const setupMiddleware = require('./script/middleware');

@@ -1,6 +1,6 @@
 // printInvoice.js
 const { connectAndPrint } = require('./printer');
-const { generateLeftQRCode, generateRightQRCode } = require("../utils/generateInvoiceData")
+const { generateLeftQRCode, generateRightQRCode } = require("../payment/generateInvoiceData")
 
 function printInvoice(invoiceData) {
     generateLeftQRCode(invoiceData)

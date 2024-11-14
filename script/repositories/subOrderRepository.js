@@ -1,10 +1,10 @@
 const { SubOrder, MenuItem, SubOrderItems } = require('../database/models');
 
 module.exports = {
-    async createSubOrder(SubOrderId, MainOrderId) {
+    async createSubOrder(SubOrderId, mainOrderId) {
         return await SubOrder.create({
             SubOrderId,
-            MainOrderId
+            mainOrderId
         });
     },
 
@@ -23,7 +23,7 @@ module.exports = {
         };
 
         if (mainOrderId) {
-            queryOptions.where = { MainOrderId: mainOrderId };
+            queryOptions.where = { mainOrderId: mainOrderId };
             const subOrders = await SubOrder.findAll(queryOptions);
             console.log(subOrders[0].toJSON().MenuItems)
             return subOrders.map(subOrder => ({
@@ -58,7 +58,7 @@ module.exports = {
 
 
     async findSubOrdersByMainOrderId(mainOrderId) {
-        return await SubOrder.findAll({ where: { MainOrderId: mainOrderId } });
+        return await SubOrder.findAll({ where: { mainOrderId: mainOrderId } });
     },
 
     async editSubOrder({ subOrderId, OrderStatus, MenuItems }) {

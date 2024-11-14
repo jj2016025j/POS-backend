@@ -1,115 +1,85 @@
-// utils/linePayService.js
-const axios = require("axios");
-const hmacSHA256 = require("crypto-js/hmac-sha256");
-const Base64 = require("crypto-js/enc-base64");
-const dotenv = require("dotenv");
-dotenv.config();
+const { sendLinePayRequest } = require("../request/linePayRequest");
 
-const {
-    LINEPAY_CHANNEL_ID,
-    LINEPAY_RETURN_HOST,
-    LINEPAY_SITE,
-    LINEPAY_VERSION,
-    LINEPAY_CHANNEL_SECRET_KEY,
-    LINEPAY_RETURN_CONFIRM_URL,
-    LINEPAY_RETURN_CANCEL_URL,
-} = process.env;
-
-function createLinePayBody(order) {
-    return {
-        ...order,
+/**
+ * 發起支付請求 掃描店家版本
+ * @param {object} order - 訂單信息
+ * @returns {string} - 用戶支付頁面的 URL
+ */
+async function initiatePayment(order) {
+    const uri = "/v2/payments/request";
+    const body = {
+        productName:order.mainOrderId,
+        amount: order.Total,
         currency: "TWD",
+        confirmUrl: linePayConfig.confirmUrl,
         redirectUrls: {
-            confirmUrl: `${LINEPAY_RETURN_HOST}${LINEPAY_RETURN_CONFIRM_URL}`,
-            cancelUrl: `${LINEPAY_RETURN_HOST}${LINEPAY_RETURN_CANCEL_URL}`,
+            cancelUrl: linePayConfig.cancelUrl,
         },
     };
+    const data = await sendLinePayRequest(uri, body);
+    return data.info.paymentUrl.web;
 }
 
-const getSignature = (uri, body) => {
-    const nonce = Date.now().toString();
-    const encryptText = `${LINEPAY_CHANNEL_SECRET_KEY}/${LINEPAY_VERSION}${uri}${JSON.stringify(body)}${nonce}`;
-    return Base64.stringify(hmacSHA256(encryptText, LINEPAY_CHANNEL_SECRET_KEY));
-};
+/**
+ * 確認支付請求 掃描店家版本
+ * @param {string} transactionId - 交易 ID
+ * @param {number} amount - 訂單金額
+ * @returns {object} - 支付確認結果
+ */
+async function confirmPayment(transactionId, amount) {
+    const uri = `/v2/payments/${transactionId}/confirm`;
+    const body = { amount, currency: "TWD" };
+    return await sendLinePayRequest(uri, body);
+}
 
-function createSignature(uri, linePayBody) {
-    const nonce = new Date().getTime();
-    const encrypt = hmacSHA256(
-        `${LINEPAY_CHANNEL_SECRET_KEY}/${LINEPAY_VERSION}${uri}${JSON.stringify(linePayBody)}${nonce}`,
-        LINEPAY_CHANNEL_SECRET_KEY
-    );
-    return {
-        "X-LINE-ChannelId": LINEPAY_CHANNEL_ID,
-        "Content-Type": "application/json",
-        "X-LINE-Authorization-Nonce": nonce,
-        "X-LINE-Authorization": Base64.stringify(encrypt),
+/**
+* 發起付款請求（使用 oneTimeKey）掃描客人版本
+* @param {string} oneTimeKey - 一次性密鑰
+* @param {object} mainOrder - 包含付款相關的信息，如 productName、amount、currency、orderId、extras 等
+* @returns {object} - 付款結果
+*/
+async function requestLinePay(oneTimeKey, mainOrder) {
+    const uri = "/v2/payments/oneTimeKeys/pay";
+    const body = {
+      productName: mainOrder.mainOrderId,
+      amount: mainOrder.Total,
+      currency: "TWD",
+      orderId: mainOrder.mainOrderId,
+      oneTimeKey: oneTimeKey,
+      extras: mainOrder.extras,
     };
+    const data = await sendLinePayRequest(uri, body);
+    return data;
 }
 
-async function initiatePayment(orderId) {
-    const orderInfo = await pool.getOrderInfo(orderId);
-    const linePayBody = createLinePayBody(orderInfo);
-    const uri = "/payments/request";
-    const headers = createSignature(uri, linePayBody);
-    const url = `${LINEPAY_SITE}/${LINEPAY_VERSION}${uri}`;
-    const linePayRes = await axios.post(url, linePayBody, { headers });
-
-    if (linePayRes?.data?.returnCode === "0000") {
-        return linePayRes.data.info.paymentUrl.web;
-    } else {
-        throw new Error("LinePay request failed");
-    }
-}
-
-async function confirmPayment(transactionId, orderId) {
-    const orderInfo = await pool.getOrderInfo(orderId);
-    const linePayBody = { amount: orderInfo.trade_amt, currency: "TWD" };
+/**
+ * 確認支付請求 掃描客人版本
+ * @param {string} transactionId - 交易 ID
+ * @param {number} amount - 訂單金額
+ * @returns {object} - 支付確認結果
+ */
+async function confirmPayment(transactionId, amount) {
     const uri = `/payments/${transactionId}/confirm`;
-    const headers = createSignature(uri, linePayBody);
-    const url = `${LINEPAY_SITE}/${LINEPAY_VERSION}${uri}`;
-    const linePayRes = await axios.post(url, linePayBody, { headers });
-
-    if (linePayRes?.data?.returnCode === "0000") {
-        await pool.confirmPaymentByCash(orderInfo.id);
-    } else {
-        throw new Error("LinePay confirmation failed");
-    }
+    const body = { amount, currency: "TWD" };
+    return await sendLinePayRequest(uri, body);
 }
 
-async function initiateLinePayTransaction(id) {
-    const uri = "/v3/payments/request";
-    const body = {
-        amount: 100,
-        currency: "TWD",
-        orderId: id,
-        packages: [{ id: "testPackage", amount: 100, name: "Test Product" }],
-        redirectUrls: {
-            confirmUrl: LINEPAY_RETURN_CONFIRM_URL,
-            cancelUrl: LINEPAY_RETURN_CANCEL_URL,
-        },
-    };
-
-    const response = await axios.post(`${LINEPAY_SITE}${uri}`, body, { headers });
-    return response.data.info.paymentUrl.web;
+/**
+ * 退款請求 掃描客人版本
+ * @param {string} orderId - 訂單 ID
+ * @param {number} refundAmount - 退款金額
+ * @returns {object} - 退款結果
+ */
+async function refundLinePay(orderId, refundAmount) {
+    const uri = `/v2/payments/orders/${orderId}/refund`;
+    const body = { refundAmount };
+    const data = await sendLinePayRequest(uri, body);
+    return data;
 }
 
-async function confirmLinePayTransaction(transactionId, orderId) {
-    const uri = `/v3/payments/${transactionId}/confirm`;
-    const body = {
-        amount: 100,
-        currency: "TWD",
-    };
-
-    const headers = {
-        "Content-Type": "application/json",
-        "X-LINE-ChannelId": LINEPAY_CHANNEL_ID,
-        "X-LINE-Authorization-Nonce": Date.now().toString(),
-        "X-LINE-Authorization": getSignature(uri, body),
-    };
-
-    await axios.post(`${LINEPAY_SITE}${uri}`, body, { headers });
-}
 module.exports = {
+    requestLinePay,
     initiatePayment,
-    confirmPayment
+    confirmPayment,
+    refundLinePay,
 };

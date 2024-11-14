@@ -25,7 +25,7 @@ async function insertDefaultData(sequelize) {
   await MenuItem.bulkCreate(menuItems, { ignoreDuplicates: true });
   await Table.bulkCreate(tables, { ignoreDuplicates: true });
 
-  console.log('\n預設資料已匯入');
+  console.log('預設資料已匯入');
 }
 
 module.exports = insertDefaultData;

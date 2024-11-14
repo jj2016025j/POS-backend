@@ -8,7 +8,7 @@ class SubOrder extends Model {
             foreignKey: 'SubOrderId',
             otherKey: 'MenuItemId'
         });
-        SubOrder.belongsTo(models.MainOrder, { foreignKey: 'MainOrderId' });
+        SubOrder.belongsTo(models.mainOrder, { foreignKey: 'mainOrderId' });
         SubOrder.hasMany(models.SubOrderItems, { foreignKey: 'SubOrderId' });
     }
 }
@@ -16,7 +16,7 @@ class SubOrder extends Model {
 SubOrder.initModel = (sequelize) => {
     SubOrder.init({
         SubOrderId: { type: DataTypes.STRING, allowNull: false, unique: true, primaryKey: true },
-        MainOrderId: { type: DataTypes.STRING, allowNull: false },
+        mainOrderId: { type: DataTypes.STRING, allowNull: false },
         SubTotal: { type: DataTypes.INTEGER, defaultValue: 0 },
         TableId: { type: DataTypes.INTEGER, allowNull: true },
         OrderStatus: {

@@ -3,7 +3,7 @@ const { DataTypes, Model } = require('sequelize');
 
 class Table extends Model {
   static associate(models) {
-      Table.hasMany(models.MainOrder, { foreignKey: 'TableId' });
+      Table.hasMany(models.mainOrder, { foreignKey: 'TableId' });
   }
 }
 
@@ -19,7 +19,7 @@ Table.initModel = (sequelize) => {
       type: DataTypes.ENUM('空桌', '點餐中', '製作中', '用餐中', '清潔中'), 
       defaultValue: '空桌' 
     },
-    MainOrderId: DataTypes.STRING,
+    mainOrderId: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'Table',

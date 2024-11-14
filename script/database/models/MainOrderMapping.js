@@ -6,7 +6,7 @@ class MainOrderMapping extends Model {}
 MainOrderMapping.initModel = (sequelize) => {
   MainOrderMapping.init({
     Id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
-    MainOrderId: { type: DataTypes.STRING, allowNull: false },
+    mainOrderId: { type: DataTypes.STRING, allowNull: false },
     MenuItemId: { type: DataTypes.INTEGER, allowNull: false },
     quantity: { type: DataTypes.INTEGER, allowNull: false },
     unit_price: { type: DataTypes.INTEGER, allowNull: false },

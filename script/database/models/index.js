@@ -1,7 +1,7 @@
 const { sequelize } = require('../../config/databaseConfig');
 
 const Category = require('./Category');
-const MainOrder = require('./MainOrder');
+const mainOrder = require('./mainOrder');
 const MenuItem = require('./MenuItem');
 const SubOrderItems = require('./SubOrderItems'); 
 const SubOrder = require('./SubOrder');
@@ -12,7 +12,7 @@ const TableOperationsLog = require('./TableOperationsLog');
 
 // 初始化模型
 Category.initModel(sequelize);
-MainOrder.initModel(sequelize);
+mainOrder.initModel(sequelize);
 MenuItem.initModel(sequelize);
 SubOrderItems.initModel(sequelize);
 SubOrder.initModel(sequelize);
@@ -37,16 +37,16 @@ MenuItem.associate = (models) => {
 };
 
 Table.associate = (models) => {
-    Table.hasMany(models.MainOrder, { foreignKey: 'TableId' });
+    Table.hasMany(models.mainOrder, { foreignKey: 'TableId' });
 };
 
-MainOrder.associate = (models) => {
-    MainOrder.belongsTo(models.Table, { foreignKey: 'TableId' });
-    MainOrder.hasMany(models.SubOrder, { foreignKey: 'MainOrderId' });
+mainOrder.associate = (models) => {
+    mainOrder.belongsTo(models.Table, { foreignKey: 'TableId' });
+    mainOrder.hasMany(models.SubOrder, { foreignKey: 'mainOrderId' });
 };
 
 SubOrder.associate = (models) => {
-    SubOrder.belongsTo(models.MainOrder, { foreignKey: 'MainOrderId' });
+    SubOrder.belongsTo(models.mainOrder, { foreignKey: 'mainOrderId' });
     SubOrder.belongsToMany(models.MenuItem, {
         through: models.SubOrderItems,
         foreignKey: 'SubOrderId',
@@ -63,16 +63,16 @@ SubOrderItems.associate = (models) => {
 // 調用各模型的 associate 方法設置關聯
 Category.associate({ MenuItem });
 MenuItem.associate({ SubOrder, Category, SubOrderItems });
-Table.associate({ MainOrder });
-MainOrder.associate({ Table, SubOrder });
-SubOrder.associate({ MainOrder, MenuItem, SubOrderItems });
+Table.associate({ mainOrder });
+mainOrder.associate({ Table, SubOrder });
+SubOrder.associate({ mainOrder, MenuItem, SubOrderItems });
 SubOrderItems.associate({ MenuItem, SubOrder });
 
 // 導出所有模型和 Sequelize 實例
 module.exports = {
     sequelize,
     Category,
-    MainOrder,
+    mainOrder,
     MenuItem,
     SubOrderItems,
     SubOrder,

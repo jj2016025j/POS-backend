@@ -1,15 +1,15 @@
-// models/MainOrder.js
+// models/mainOrder.js
 const { DataTypes, Model } = require('sequelize');
 
-class MainOrder extends Model {
+class mainOrder extends Model {
   static associate(models) {
-      MainOrder.belongsTo(models.Table, { foreignKey: 'TableId' });
+      mainOrder.belongsTo(models.Table, { foreignKey: 'TableId' });
   }
 }
 
-MainOrder.initModel = (sequelize) => {
-  MainOrder.init({
-    MainOrderId: {
+mainOrder.initModel = (sequelize) => {
+  mainOrder.init({
+    mainOrderId: {
       type: DataTypes.STRING,
       allowNull: false,
       primaryKey: true
@@ -43,16 +43,16 @@ MainOrder.initModel = (sequelize) => {
       defaultValue: DataTypes.NOW
     },
     PaymentMethod: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW
+      type: DataTypes.ENUM('現金', '信用卡', 'Line pay'),
+      defaultValue: '現金'
     },
     
     UserId: DataTypes.INTEGER,
   }, {
     sequelize,
-    modelName: 'MainOrder',
+    modelName: 'mainOrder',
     tableName: 'MainOrders',
   });
 };
 
-module.exports = MainOrder;
+module.exports = mainOrder;

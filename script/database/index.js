@@ -14,7 +14,7 @@ async function initializeDatabase() {
     // 插入預設資料
     await insertDefaultData(sequelize);
 
-    console.log("\n資料庫初始化成功！");
+    console.log("資料庫初始化成功！");
     return sequelize;
   } catch (error) {
     console.error("資料庫初始化失敗:", error);

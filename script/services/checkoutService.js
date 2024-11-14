@@ -1,12 +1,13 @@
 const mainOrderRepository = require('../repositories/mainOrderRepository');
 const tableRepository = require('../repositories/tableRepository');
-const { initiateLinePayTransaction, confirmLinePayTransaction } = require('../utils');
+const { requestLinePay } = require('./linePayService');
+const { confirmLinePayTransaction } = require('../utils');
 
 module.exports = {
-    async processCheckout(MainOrderId) {
-        
-        const mainOrder = await mainOrderRepository.findMainOrderById(MainOrderId);
-        if (!mainOrder) throw new Error(`訂單 ${MainOrderId} 不存在`);
+    async processCheckout(mainOrderId) {
+
+        const mainOrder = await mainOrderRepository.findMainOrderById(mainOrderId);
+        if (!mainOrder) throw new Error(`訂單 ${mainOrderId} 不存在`);
 
         mainOrder.OrderStatus = "已結帳";
         await mainOrder.save();
@@ -17,10 +18,10 @@ module.exports = {
         return mainOrder;
     },
 
-    async creditCardCheckout(MainOrderId) {
+    async creditCardCheckout(mainOrderId) {
 
-        const mainOrder = await mainOrderRepository.findMainOrderById(MainOrderId);
-        if (!mainOrder) throw new Error(`訂單 ${MainOrderId} 不存在`);
+        const mainOrder = await mainOrderRepository.findMainOrderById(mainOrderId);
+        if (!mainOrder) throw new Error(`訂單 ${mainOrderId} 不存在`);
 
         // 發送交易請求給信用卡機
         const transactionResult = await creditCardService.processTransaction(mainOrder.totalAmount);
@@ -38,7 +39,7 @@ module.exports = {
         return mainOrder;
     },
 
-    async cancelTransaction(MainOrderId) {
+    async cancelTransaction(mainOrderId) {
         // 模擬建立連接
         const connection = await establishConnection();
         if (!connection) {
@@ -46,7 +47,7 @@ module.exports = {
         }
 
         // 發送取消請求
-        const cancelResponse = await connection.sendCancelRequest(MainOrderId);
+        const cancelResponse = await connection.sendCancelRequest(mainOrderId);
         if (!cancelResponse.success) {
             return { status: 'failure', errorMessage: cancelResponse.error };
         }
@@ -54,19 +55,20 @@ module.exports = {
         return { status: 'success' };
     },
 
-    async initiateLinePay(MainOrderId) {
-        const mainOrder = await mainOrderRepository.findMainOrderById(MainOrderId);
-        return await initiateLinePayTransaction(mainOrder);
+    async requestLinePay(oneTimeKey, mainOrderId) {
+        const mainOrder = await mainOrderRepository.findMainOrderById(mainOrderId);
+        return await requestLinePay(oneTimeKey, mainOrder);
     },
 
-    async confirmLinePay(MainOrderId) {
+    async confirmLinePay(mainOrderId) {
         // 確認支付
-        const mainOrder = await mainOrderRepository.findMainOrderById(MainOrderId);
+        const mainOrder = await mainOrderRepository.findMainOrderById(mainOrderId);
         const confirmationResult = await linePayService.confirmPayment(mainOrder);
 
-        await confirmLinePayTransaction(MainOrderId);
-
-        const newMainOrder = await mainOrderRepository.findMainOrderById(MainOrderId);
+        if (!confirmationResult)
+            return null
+        
+        const newMainOrder = await mainOrderRepository.findMainOrderById(mainOrderId);
         if (newMainOrder) {
             newMainOrder.OrderStatus = "已結帳";
             await newMainOrder.save();
@@ -77,18 +79,41 @@ module.exports = {
         return newMainOrder;
     },
 
-    async cancelCheckout(MainOrderId) {
-        const mainOrder = await mainOrderRepository.findMainOrderById(MainOrderId);
+    async cancelCheckout(mainOrderId) {
+        const mainOrder = await mainOrderRepository.findMainOrderById(mainOrderId);
         if (!mainOrder || mainOrder.OrderStatus !== "已結帳") {
-            throw new Error(`訂單 ${MainOrderId} 還未結帳`);
+            throw new Error(`訂單 ${mainOrderId} 還未結帳`);
         }
 
-        mainOrder.OrderStatus = "未結帳";
-        await mainOrder.save();
+        let cancelSuccess = false;
 
-        // 將桌位狀態設為用餐中
-        await tableRepository.updateTableStatus(mainOrder.TableId, "用餐中");
+        try {
+            if (mainOrder.PaymentMethod === 'Line pay') {
+                await refundLinePay(mainOrder.mainOrderId, mainOrder.total); // 100 是退款金額
+                cancelSuccess = true;
+            } else if (mainOrder.PaymentMethod === '信用卡') {
+                await creditCardService.cancelTransaction(mainOrder.transactionId);
+                cancelSuccess = true;
+            } else if (mainOrder.PaymentMethod === '現金') {
+                cancelSuccess = true;
+            }
 
-        return mainOrder;
+            if (cancelSuccess) {
+                // 更新訂單狀態
+                mainOrder.OrderStatus = "未結帳";
+                await mainOrder.save();
+
+                // 更新桌位狀態
+                await tableRepository.updateTableStatus(mainOrder.TableId, "用餐中");
+            }
+            else{
+                throw new Error(`取消訂單失敗: ${error.message}`);
+            }
+
+            return mainOrder;
+        } catch (error) {
+            console.error(`取消訂單 ${mainOrderId} 失敗:`, error);
+            throw new Error(`取消訂單失敗: ${error.message}`);
+        }
     }
 };

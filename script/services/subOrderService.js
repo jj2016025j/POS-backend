@@ -15,7 +15,7 @@ module.exports = {
         }
 
         const subOrderId = generateSubOrderId();
-        return await subOrderRepository.createSubOrder(subOrderId, value.MainOrderId);
+        return await subOrderRepository.createSubOrder(subOrderId, value.mainOrderId);
     },
 
     async getSubOrderInfo(data) {

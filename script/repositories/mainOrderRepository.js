@@ -1,19 +1,19 @@
-const { MainOrder } = require('../database/models');
+const { mainOrder } = require('../database/models');
 
 module.exports = {
-    async createMainOrder(TableId, MainOrderId) {
-        return await MainOrder.create({
+    async createMainOrder(TableId, mainOrderId) {
+        return await mainOrder.create({
             TableId,
-            MainOrderId,
+            mainOrderId,
             OrderStatus: '未結帳'
         });
     },
-    async findMainOrderById(MainOrderId) {
-        return await MainOrder.findByPk(MainOrderId);
+    async findMainOrderById(mainOrderId) {
+        return await mainOrder.findByPk(mainOrderId);
     },
 
-    async updateOrderStatus(MainOrderId, OrderStatus, UserId) {
-        const mainOrder = await MainOrder.findOne({ where: { MainOrderId } });
+    async updateOrderStatus(mainOrderId, OrderStatus, UserId) {
+        const mainOrder = await mainOrder.findOne({ where: { mainOrderId } });
         if (!mainOrder) throw new Error("找不到該訂單");
 
         mainOrder.OrderStatus = OrderStatus;
@@ -23,7 +23,7 @@ module.exports = {
     },
 
     async getRecentOrders() {
-        return await MainOrder.findAll({
+        return await mainOrder.findAll({
             order: [['createdAt', 'DESC']],
             limit: 10,
         });
