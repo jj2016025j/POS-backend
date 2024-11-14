@@ -25,10 +25,10 @@ module.exports = {
         if (mainOrderId) {
             queryOptions.where = { mainOrderId: mainOrderId };
             const subOrders = await subOrder.findAll(queryOptions);
-            console.log(subOrders[0].toJSON().MenuItems)
+            console.log(subOrders[0].toJSON().menuItems)
             return subOrders.map(subOrder => ({
                 ...subOrder.toJSON(),
-                MenuItems: subOrder.MenuItems.map(item => ({
+                menuItems: subOrder.menuItems.map(item => ({
                     menuItemName: item.menuItemName,
                     price: item.price,
                     quantity: item.subOrderItems.quantity 
@@ -41,7 +41,7 @@ module.exports = {
 
             return {
                 ...subOrder.toJSON(),
-                MenuItems: subOrder.MenuItems.map(item => ({
+                menuItems: subOrder.menuItems.map(item => ({
                     menuItemName: item.menuItemName,
                     price: item.price,
                     quantity: item.subOrderItems.quantity 
@@ -61,13 +61,13 @@ module.exports = {
         return await subOrder.findAll({ where: { mainOrderId: mainOrderId } });
     },
 
-    async editSubOrder({ subOrderId, orderStatus, MenuItems }) {
+    async editSubOrder({ subOrderId, orderStatus, menuItems }) {
         // 更新子訂單的狀態（如果提供了 orderStatus）
         if (orderStatus) {
             await subOrder.update({ orderStatus }, { where: { subOrderId: subOrderId } });
         }
 
-        for (const item of MenuItems) {
+        for (const item of menuItems) {
             const { menuItemId, quantity } = item;
 
             if (quantity === 0 || quantity === null || quantity === undefined) {
@@ -98,7 +98,7 @@ module.exports = {
             }
         }
 
-        return { subOrderId, orderStatus, MenuItems };
+        return { subOrderId, orderStatus, menuItems };
     },
 
     async deleteSubOrder(subOrderId) {

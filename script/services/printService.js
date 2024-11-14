@@ -21,12 +21,12 @@ module.exports = {
         if (!subOrder) throw new Error(`子訂單 ${subOrderId} 不存在`);
 
         // 計算子訂單的總金額
-        const subTotal = subOrder.MenuItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+        const subTotal = subOrder.menuItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
         // 構建打印數據
         const printsubOrder = {
             ...subOrder,
-            MenuItems: subOrder.MenuItems.map(menuItem => ({
+            menuItems: subOrder.menuItems.map(menuItem => ({
                 ...menuItem,
                 total: menuItem.price * menuItem.quantity
             })),
@@ -52,7 +52,7 @@ module.exports = {
         const items = [];
 
         subOrders.forEach(subOrder => {
-            subOrder.MenuItems.forEach(item => {
+            subOrder.menuItems.forEach(item => {
                 const itemTotal = item.price * item.quantity;
                 totalAmount += itemTotal;
 

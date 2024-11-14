@@ -25,7 +25,7 @@ subOrderItems.initModel = (sequelize) => {
             type: DataTypes.INTEGER, // 確認此類型與 menuItem 表中的 id 一致
             allowNull: false,
             references: {
-                model: 'MenuItems',
+                model: 'menuItems',
                 key: 'id'
             },
             onDelete: 'CASCADE',

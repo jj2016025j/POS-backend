@@ -9,6 +9,12 @@ class menuItem extends Model {
             otherKey: 'subOrderId'
         });
         menuItem.hasMany(models.subOrderItems, { foreignKey: 'menuItemId' });
+
+        // 新增與 Category 的關聯
+        menuItem.belongsTo(models.Category, {
+            foreignKey: 'categoryId',
+            as: 'category' // 可選：設定別名
+        });
     }
 }
 
@@ -32,7 +38,7 @@ menuItem.initModel = (sequelize) => {
             type: DataTypes.INTEGER,
             allowNull: false
         },
-        image_url: DataTypes.TEXT,
+        imageUrl: DataTypes.TEXT,
         insupply: {
             type: DataTypes.BOOLEAN,
             defaultValue: true
@@ -48,7 +54,7 @@ menuItem.initModel = (sequelize) => {
     }, {
         sequelize,
         modelName: 'menuItem',
-        tableName: 'MenuItems',
+        tableName: 'menuItems',
     });
 };
 

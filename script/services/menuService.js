@@ -3,7 +3,7 @@ const { validateCreateMenuItem, validateEditMenuItem, validateDeleteMenuItem } =
 
 module.exports = {
     async getAllMenuItems(query) {
-        const { limit = 10, order = 'ASC', categoryId } = query;
+        const { limit = 100, order = 'ASC', categoryId } = query;
         return await menuRepository.getAllMenuItems(limit, order, categoryId);
     },
 
