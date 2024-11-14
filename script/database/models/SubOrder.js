@@ -1,35 +1,35 @@
-// models/SubOrder.js
+// models/subOrder.js
 const { DataTypes, Model } = require('sequelize');
 
-class SubOrder extends Model {
+class subOrder extends Model {
     static associate(models) {
-        SubOrder.belongsToMany(models.MenuItem, {
-            through: models.SubOrderItems, // 使用聯結表
-            foreignKey: 'SubOrderId',
-            otherKey: 'MenuItemId'
+        subOrder.belongsToMany(models.menuItem, {
+            through: models.subOrderItems, // 使用聯結表
+            foreignKey: 'subOrderId',
+            otherKey: 'menuItemId'
         });
-        SubOrder.belongsTo(models.mainOrder, { foreignKey: 'mainOrderId' });
-        SubOrder.hasMany(models.SubOrderItems, { foreignKey: 'SubOrderId' });
+        subOrder.belongsTo(models.mainOrder, { foreignKey: 'mainOrderId' });
+        subOrder.hasMany(models.subOrderItems, { foreignKey: 'subOrderId' });
     }
 }
 
-SubOrder.initModel = (sequelize) => {
-    SubOrder.init({
-        SubOrderId: { type: DataTypes.STRING, allowNull: false, unique: true, primaryKey: true },
+subOrder.initModel = (sequelize) => {
+    subOrder.init({
+        subOrderId: { type: DataTypes.STRING, allowNull: false, unique: true, primaryKey: true },
         mainOrderId: { type: DataTypes.STRING, allowNull: false },
-        SubTotal: { type: DataTypes.INTEGER, defaultValue: 0 },
-        TableId: { type: DataTypes.INTEGER, allowNull: true },
-        OrderStatus: {
+        subTotal: { type: DataTypes.INTEGER, defaultValue: 0 },
+        tableId: { type: DataTypes.INTEGER, allowNull: true },
+        orderStatus: {
             type: DataTypes.ENUM('無餐點', '製作中', '已完成', '已取消'),
             defaultValue: '無餐點'
         },
-        CreateTime: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
-        UpdateTime: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
+        createTime: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
+        updateTime: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
     }, {
         sequelize,
-        modelName: 'SubOrder',
-        tableName: 'SubOrders',
+        modelName: 'subOrder',
+        tableName: 'subOrders',
     });
 };
 
-module.exports = SubOrder;
+module.exports = subOrder;

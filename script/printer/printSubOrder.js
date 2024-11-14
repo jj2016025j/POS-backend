@@ -9,14 +9,14 @@ function printSubOrder(subOrder) {
     connectAndPrint((printer) => {
       const title = "FangFood 芳鍋";
       const menuHeader = "名稱  單價 數量 總金額";
-      const formattedDate = formatDate(subOrder.CreateTime);
+      const formattedDate = formatDate(subOrder.createTime);
 
         printer
             .font('a')
             .align('lt')
             .size(1, 1)
             .text(title)
-            .text(`訂單編號: ${subOrder.SubOrderId}`)
+            .text(`訂單編號: ${subOrder.subOrderId}`)
             .text(`下單日期: ${formattedDate}`)
             .text('菜單:')
             .size(0, 0)

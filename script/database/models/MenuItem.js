@@ -1,30 +1,30 @@
-// models/MenuItem.js
+// models/menuItem.js
 const { DataTypes, Model } = require('sequelize');
 
-class MenuItem extends Model {
+class menuItem extends Model {
     static associate(models) {
-        MenuItem.belongsToMany(models.SubOrder, {
-            through: models.SubOrderItems,
-            foreignKey: 'MenuItemId',
-            otherKey: 'SubOrderId'
+        menuItem.belongsToMany(models.subOrder, {
+            through: models.subOrderItems,
+            foreignKey: 'menuItemId',
+            otherKey: 'subOrderId'
         });
-        MenuItem.hasMany(models.SubOrderItems, { foreignKey: 'MenuItemId' });
+        menuItem.hasMany(models.subOrderItems, { foreignKey: 'menuItemId' });
     }
 }
 
-MenuItem.initModel = (sequelize) => {
-    MenuItem.init({
-        Id: {
+menuItem.initModel = (sequelize) => {
+    menuItem.init({
+        id: {
             type: DataTypes.INTEGER,
             autoIncrement: true,
             primaryKey: true
         },
-        MenuItemName: {
+        menuItemName: {
             type: DataTypes.STRING,
             allowNull: false,
             unique: true
         },
-        CategoryId: {
+        categoryId: {
             type: DataTypes.INTEGER,
             allowNull: false
         },
@@ -33,23 +33,23 @@ MenuItem.initModel = (sequelize) => {
             allowNull: false
         },
         image_url: DataTypes.TEXT,
-        Insupply: {
+        insupply: {
             type: DataTypes.BOOLEAN,
             defaultValue: true
         },
-        CreateTime: {
+        createTime: {
             type: DataTypes.DATE,
             defaultValue: DataTypes.NOW
         },
-        UpdateTime: {
+        updateTime: {
             type: DataTypes.DATE,
             defaultValue: DataTypes.NOW
         },
     }, {
         sequelize,
-        modelName: 'MenuItem',
+        modelName: 'menuItem',
         tableName: 'MenuItems',
     });
 };
 
-module.exports = MenuItem;
+module.exports = menuItem;

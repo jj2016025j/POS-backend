@@ -4,7 +4,7 @@ start /min "" "C:\xampp2\mysql_start.bat"
 timeout /t 3 /nobreak >nul
 
 echo 啟動後端服務...
-cd /d "C:\Users\User\WebPractice\POS-backend"
+cd /d "C:\users\user\WebPractice\POS-backend"
 start /b yarn dev
 @REM start /min yarn dev
 @REM start cmd /k "yarn dev"

@@ -21,7 +21,7 @@ module.exports = {
         if (!subOrder) throw new Error(`子訂單 ${subOrderId} 不存在`);
 
         // 計算子訂單的總金額
-        const SubTotal = subOrder.MenuItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+        const subTotal = subOrder.MenuItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
         // 構建打印數據
         const printsubOrder = {
@@ -30,7 +30,7 @@ module.exports = {
                 ...menuItem,
                 total: menuItem.price * menuItem.quantity
             })),
-            SubTotal
+            subTotal
         };
 
         // 傳給打印方法
@@ -57,13 +57,13 @@ module.exports = {
                 totalAmount += itemTotal;
 
                 // 合併相同品項的數量和金額
-                const existingItem = items.find(i => i.name === item.MenuItemName);
+                const existingItem = items.find(i => i.name === item.menuItemName);
                 if (existingItem) {
                     existingItem.quantity += item.quantity;
                     existingItem.total += itemTotal;
                 } else {
                     items.push({
-                        name: item.MenuItemName,
+                        name: item.menuItemName,
                         price: item.price,
                         quantity: item.quantity,
                         total: itemTotal
@@ -72,9 +72,9 @@ module.exports = {
             });
         });
 
-        mainOrder.SubTotal = totalAmount;
-        mainOrder.ServiceFee = totalAmount * 0.1;
-        mainOrder.Total = Math.round(totalAmount * 1.1);
+        mainOrder.subTotal = totalAmount;
+        mainOrder.serviceFee = totalAmount * 0.1;
+        mainOrder.total = Math.round(totalAmount * 1.1);
 
         // 構建打印數據
         const invoiceData = {

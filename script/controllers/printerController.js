@@ -47,7 +47,7 @@ module.exports = {
             console.log(`Generated QR Code URL: ${fullUrl}`);
 
             // 模擬列印
-            console.log(`Printing QR code for Table ${mainOrderId} with URL: ${fullUrl}`);
+            console.log(`Printing QR code for table ${mainOrderId} with URL: ${fullUrl}`);
 
             // 回應成功訊息
             res.status(200).json({ qrCodeUrl: fullUrl });

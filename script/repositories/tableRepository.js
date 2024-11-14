@@ -1,31 +1,31 @@
-const { Table, mainOrder } = require('../database/models');
+const { table, mainOrder } = require('../database/models');
 
 module.exports = {
     async findAllTables(limit = 100) {
-        return await Table.findAll({ limit });
+        return await table.findAll({ limit });
     },
 
     async updateTableInfo(tableNumber, status, mainOrderId) {
-        return await Table.update(
+        return await table.update(
             { TablesStatus: status, mainOrderId: mainOrderId },
             { where: { TableNumber: tableNumber } }
         );
     },
 
     async findTableByNumber(tableNumber) {
-        return await Table.findOne({ where: { TableNumber: tableNumber } });
+        return await table.findOne({ where: { TableNumber: tableNumber } });
     },
 
     async findTableByMainOrderId(mainOrderId) {
         const mainOrder = await mainOrder.findOne({
             where: { mainOrderId },
-            include: [Table],
+            include: [table],
         });
-        return mainOrder ? mainOrder.Table : null;
+        return mainOrder ? mainOrder.table : null;
     },
 
     async resetTableStatus(tableNumber, status) {
-        return await Table.update(
+        return await table.update(
             { TablesStatus: status, mainOrderId: null },
             { where: { TableNumber: tableNumber } }
         );
@@ -33,23 +33,23 @@ module.exports = {
 
     async resetAllTables() {
         // 將所有桌位的狀態設為空桌，並清空訂單
-        return await Table.update(
+        return await table.update(
             { TablesStatus: '空桌', mainOrderId: null },
             { where: {} } // 沒有條件，會更新所有桌位
         );
     },
 
-    async resetTableByOrder(TableId) {
-        return await Table.update(
+    async resetTableByOrder(tableId) {
+        return await table.update(
             { TablesStatus: '空桌', mainOrderId: null },
-            { where: { Id: TableId } }
+            { where: { id: tableId } }
         );
     },
 
-    async updateTableStatus(TableId, status) {
-        return await Table.update(
+    async updateTableStatus(tableId, status) {
+        return await table.update(
             { TablesStatus: status },
-            { where: { Id: TableId } }
+            { where: { id: tableId } }
         );
     }
 };

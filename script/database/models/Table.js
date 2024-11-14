@@ -1,14 +1,14 @@
-// models/Table.js
+// models/table.js
 const { DataTypes, Model } = require('sequelize');
 
-class Table extends Model {
+class table extends Model {
   static associate(models) {
-      Table.hasMany(models.mainOrder, { foreignKey: 'TableId' });
+      table.hasMany(models.mainOrder, { foreignKey: 'tableId' });
   }
 }
 
-Table.initModel = (sequelize) => {
-  Table.init({
+table.initModel = (sequelize) => {
+  table.init({
     TableNumber: { 
       type: DataTypes.INTEGER, 
       allowNull: false, 
@@ -22,10 +22,10 @@ Table.initModel = (sequelize) => {
     mainOrderId: DataTypes.STRING,
   }, {
     sequelize,
-    modelName: 'Table',
+    modelName: 'table',
     tableName: 'Tables',
   });
 };
 
-module.exports = Table;
+module.exports = table;
 

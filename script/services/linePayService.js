@@ -9,7 +9,7 @@ async function initiatePayment(order) {
     const uri = "/v2/payments/request";
     const body = {
         productName:order.mainOrderId,
-        amount: order.Total,
+        amount: order.total,
         currency: "TWD",
         confirmUrl: linePayConfig.confirmUrl,
         redirectUrls: {
@@ -42,7 +42,7 @@ async function requestLinePay(oneTimeKey, mainOrder) {
     const uri = "/v2/payments/oneTimeKeys/pay";
     const body = {
       productName: mainOrder.mainOrderId,
-      amount: mainOrder.Total,
+      amount: mainOrder.total,
       currency: "TWD",
       orderId: mainOrder.mainOrderId,
       oneTimeKey: oneTimeKey,

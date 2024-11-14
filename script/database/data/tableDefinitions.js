@@ -4,10 +4,10 @@ const MenuItemsTable = require('../tables/MenuItems');
 const TablesTable = require('../tables/Tables');
 const MainOrdersTable = require('../tables/MainOrders');
 const MainOrderMappingsTable = require('../tables/MainOrderMappings');
-const SubOrdersTable = require('../tables/SubOrders');
+const SubOrdersTable = require('../tables/subOrders');
 const SubOrderMappingsTable = require('../tables/SubOrderMappings');
-const UsersTable = require('../tables/Users');
-const TableOperationsLogTable = require('../tables/TableOperationsLog');
+const UsersTable = require('../tables/users');
+const TableOperationsLogTable = require('../tables/tableOperationsLog');
 
 module.exports = {
   CategoryTable,

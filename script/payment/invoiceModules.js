@@ -14,7 +14,7 @@ module.exports = InvoiceModules = {
         return invoiceNumber;
     },
 
-    // 發票開立日期 (Invoice Date)
+    // 發票開立日期 (Invoice createTime)
     formatInvoiceDate(year = new Date().getFullYear() - 1911, month = new Date().getMonth() + 1, day = new Date().getDate()) {
         const formattedDate = `${year}${month.toString().padStart(2, '0')}${day.toString().padStart(2, '0')}`;
         if (formattedDate.length !== 7) throw new Error("日期格式不正確，必須為 7 碼");
@@ -36,7 +36,7 @@ module.exports = InvoiceModules = {
         return hexAmount.padStart(8, '0');
     },
 
-    // 總計額 (Total Amount) 含稅
+    // 總計額 (total Amount) 含稅
     convertTotalAmountToHex(amount = 0) {
         let hexTotal = parseInt(amount, 10).toString(16).toUpperCase();
         return hexTotal.padStart(8, '0');
@@ -85,7 +85,7 @@ module.exports = InvoiceModules = {
         return itemCount.toString();
     },
 
-    // 該張發票交易品目總筆數 (Total Item Count)
+    // 該張發票交易品目總筆數 (total Item Count)
     getTotalItemCount(totalItems = 0) {
         return totalItems.toString();
     },
@@ -100,7 +100,7 @@ module.exports = InvoiceModules = {
         }
     },
 
-    // 品名 (Item Name)
+    // 品名 (Item name)
     validateItemName(name = "未命名商品") {
         if (name.includes(":")) throw new Error("品名不能包含冒號");
         return name;

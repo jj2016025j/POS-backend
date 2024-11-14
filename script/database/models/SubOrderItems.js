@@ -1,32 +1,32 @@
-// models/SubOrderItems.js
+// models/subOrderItems.js
 const { DataTypes, Model } = require('sequelize');
 
-class SubOrderItems extends Model {
+class subOrderItems extends Model {
     static associate(models) {
-        // SubOrderItems 關聯到 MenuItem 和 SubOrder
-        SubOrderItems.belongsTo(models.MenuItem, { foreignKey: 'MenuItemId' });
-        SubOrderItems.belongsTo(models.SubOrder, { foreignKey: 'SubOrderId' });
+        // subOrderItems 關聯到 menuItem 和 subOrder
+        subOrderItems.belongsTo(models.menuItem, { foreignKey: 'menuItemId' });
+        subOrderItems.belongsTo(models.subOrder, { foreignKey: 'subOrderId' });
     }
 }
 
-SubOrderItems.initModel = (sequelize) => {
-    SubOrderItems.init({
-        SubOrderId: {
-            type: DataTypes.STRING, // 確認此類型與 SubOrder 表中的 SubOrderId 一致
+subOrderItems.initModel = (sequelize) => {
+    subOrderItems.init({
+        subOrderId: {
+            type: DataTypes.STRING, // 確認此類型與 subOrder 表中的 subOrderId 一致
             allowNull: false,
             references: {
-                model: 'SubOrders',
-                key: 'SubOrderId'
+                model: 'subOrders',
+                key: 'subOrderId'
             },
             onDelete: 'CASCADE',
             onUpdate: 'CASCADE'
         },
-        MenuItemId: {
-            type: DataTypes.INTEGER, // 確認此類型與 MenuItem 表中的 Id 一致
+        menuItemId: {
+            type: DataTypes.INTEGER, // 確認此類型與 menuItem 表中的 id 一致
             allowNull: false,
             references: {
                 model: 'MenuItems',
-                key: 'Id'
+                key: 'id'
             },
             onDelete: 'CASCADE',
             onUpdate: 'CASCADE'
@@ -38,10 +38,10 @@ SubOrderItems.initModel = (sequelize) => {
         }
     }, {
         sequelize,
-        modelName: 'SubOrderItems',
-        tableName: 'SubOrderItems',
+        modelName: 'subOrderItems',
+        tableName: 'subOrderItems',
         timestamps: false
     });
 };
 
-module.exports = SubOrderItems;
+module.exports = subOrderItems;

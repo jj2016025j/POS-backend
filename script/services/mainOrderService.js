@@ -31,13 +31,13 @@ module.exports = {
     },
 
     async editMainOrder(data) {
-        const { mainOrderId, OrderStatus, UserId } = data;
+        const { mainOrderId, orderStatus, userId } = data;
 
-        if (!mainOrderId || !OrderStatus) {
-            throw new Error("mainOrderId and OrderStatus are required");
+        if (!mainOrderId || !orderStatus) {
+            throw new Error("mainOrderId and orderStatus are required");
         }
 
-        return await mainOrderRepository.updateOrderStatus(mainOrderId, OrderStatus, UserId);
+        return await mainOrderRepository.updateOrderStatus(mainOrderId, orderStatus, userId);
     },
 
     async getRecentOrders() {

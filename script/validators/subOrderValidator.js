@@ -14,7 +14,7 @@ const editSubOrderSchema = Joi.object({
         'string.base': 'subOrderId 必須為字串',
         'any.required': '必須提供 subOrderId'
     }),
-    OrderStatus: Joi.string().valid('未製作', '製作中', '已完成', '已取消').optional(),
+    orderStatus: Joi.string().valid('未製作', '製作中', '已完成', '已取消').optional(),
     MenuItems: Joi.array().items(
         Joi.object({
             menuItemId: Joi.number().integer().required().messages({

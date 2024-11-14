@@ -5,12 +5,12 @@ class Category extends Model { }
 
 Category.initModel = (sequelize) => {
   Category.init({
-    Id: {
+    id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true
     },
-    CategoryName: {
+    categoryName: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true

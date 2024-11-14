@@ -2,82 +2,82 @@ const { sequelize } = require('../../config/databaseConfig');
 
 const Category = require('./Category');
 const mainOrder = require('./mainOrder');
-const MenuItem = require('./MenuItem');
-const SubOrderItems = require('./SubOrderItems'); 
-const SubOrder = require('./SubOrder');
-const Table = require('./Table');
-const User = require('./User');
-const MainOrderMapping = require('./MainOrderMapping');
-const TableOperationsLog = require('./TableOperationsLog');
+const menuItem = require('./menuItem');
+const subOrderItems = require('./subOrderItems'); 
+const subOrder = require('./subOrder');
+const table = require('./table');
+const user = require('./user');
+const mainOrderItem = require('./mainOrderItem');
+const tableOperationsLog = require('./tableOperationsLog');
 
 // 初始化模型
 Category.initModel(sequelize);
 mainOrder.initModel(sequelize);
-MenuItem.initModel(sequelize);
-SubOrderItems.initModel(sequelize);
-SubOrder.initModel(sequelize);
-Table.initModel(sequelize);
-User.initModel(sequelize);
-MainOrderMapping.initModel(sequelize);
-TableOperationsLog.initModel(sequelize);
+menuItem.initModel(sequelize);
+subOrderItems.initModel(sequelize);
+subOrder.initModel(sequelize);
+table.initModel(sequelize);
+user.initModel(sequelize);
+mainOrderItem.initModel(sequelize);
+tableOperationsLog.initModel(sequelize);
 
 // 設置表格關聯
 Category.associate = (models) => {
-    Category.hasMany(models.MenuItem, { foreignKey: 'CategoryId' });
+    Category.hasMany(models.menuItem, { foreignKey: 'categoryId' });
 };
 
-MenuItem.associate = (models) => {
-    MenuItem.belongsTo(models.Category, { foreignKey: 'CategoryId' });
-    MenuItem.belongsToMany(models.SubOrder, {
-        through: models.SubOrderItems,
-        foreignKey: 'MenuItemId',
-        otherKey: 'SubOrderId',
+menuItem.associate = (models) => {
+    menuItem.belongsTo(models.Category, { foreignKey: 'categoryId' });
+    menuItem.belongsToMany(models.subOrder, {
+        through: models.subOrderItems,
+        foreignKey: 'menuItemId',
+        otherKey: 'subOrderId',
     });
-    MenuItem.hasMany(models.SubOrderItems, { foreignKey: 'MenuItemId', as: 'OrderItems' }); // 唯一別名
+    menuItem.hasMany(models.subOrderItems, { foreignKey: 'menuItemId', as: 'OrderItems' }); // 唯一別名
 };
 
-Table.associate = (models) => {
-    Table.hasMany(models.mainOrder, { foreignKey: 'TableId' });
+table.associate = (models) => {
+    table.hasMany(models.mainOrder, { foreignKey: 'tableId' });
 };
 
 mainOrder.associate = (models) => {
-    mainOrder.belongsTo(models.Table, { foreignKey: 'TableId' });
-    mainOrder.hasMany(models.SubOrder, { foreignKey: 'mainOrderId' });
+    mainOrder.belongsTo(models.table, { foreignKey: 'tableId' });
+    mainOrder.hasMany(models.subOrder, { foreignKey: 'mainOrderId' });
 };
 
-SubOrder.associate = (models) => {
-    SubOrder.belongsTo(models.mainOrder, { foreignKey: 'mainOrderId' });
-    SubOrder.belongsToMany(models.MenuItem, {
-        through: models.SubOrderItems,
-        foreignKey: 'SubOrderId',
-        otherKey: 'MenuItemId',
+subOrder.associate = (models) => {
+    subOrder.belongsTo(models.mainOrder, { foreignKey: 'mainOrderId' });
+    subOrder.belongsToMany(models.menuItem, {
+        through: models.subOrderItems,
+        foreignKey: 'subOrderId',
+        otherKey: 'menuItemId',
     });
-    SubOrder.hasMany(models.SubOrderItems, { foreignKey: 'SubOrderId', as: 'OrderItems' }); // 唯一別名
+    subOrder.hasMany(models.subOrderItems, { foreignKey: 'subOrderId', as: 'OrderItems' }); // 唯一別名
 };
 
-SubOrderItems.associate = (models) => {
-    SubOrderItems.belongsTo(models.MenuItem, { foreignKey: 'MenuItemId', as: 'MenuItem' });
-    SubOrderItems.belongsTo(models.SubOrder, { foreignKey: 'SubOrderId', as: 'SubOrder' });
+subOrderItems.associate = (models) => {
+    subOrderItems.belongsTo(models.menuItem, { foreignKey: 'menuItemId', as: 'menuItem' });
+    subOrderItems.belongsTo(models.subOrder, { foreignKey: 'subOrderId', as: 'subOrder' });
 };
 
 // 調用各模型的 associate 方法設置關聯
-Category.associate({ MenuItem });
-MenuItem.associate({ SubOrder, Category, SubOrderItems });
-Table.associate({ mainOrder });
-mainOrder.associate({ Table, SubOrder });
-SubOrder.associate({ mainOrder, MenuItem, SubOrderItems });
-SubOrderItems.associate({ MenuItem, SubOrder });
+Category.associate({ menuItem });
+menuItem.associate({ subOrder, Category, subOrderItems });
+table.associate({ mainOrder });
+mainOrder.associate({ table, subOrder });
+subOrder.associate({ mainOrder, menuItem, subOrderItems });
+subOrderItems.associate({ menuItem, subOrder });
 
 // 導出所有模型和 Sequelize 實例
 module.exports = {
     sequelize,
     Category,
     mainOrder,
-    MenuItem,
-    SubOrderItems,
-    SubOrder,
-    Table,
-    User,
-    MainOrderMapping,
-    TableOperationsLog
+    menuItem,
+    subOrderItems,
+    subOrder,
+    table,
+    user,
+    mainOrderItem,
+    tableOperationsLog
 };

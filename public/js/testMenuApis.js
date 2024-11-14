@@ -19,10 +19,10 @@ async function getMenu(categoryId) {
 async function addItem() {
     try {
         const response = await axios.post(`${baseUrl}/items`, {
-            Name: '新菜品',
+            name: '新菜品',
             Description: '新菜品描述',
             Price: 99.99,
-            CategoryId: 1, // 假設您已有此類別ID
+            categoryId: 1, // 假設您已有此類別ID
             IsActive: true
         });
         // console.log('新增菜單項目:', response.data);
@@ -35,10 +35,10 @@ async function addItem() {
 async function updateItem(itemId) {
     try {
         const response = await axios.put(`${baseUrl}/items/${itemId}`, {
-            Name: '更新後的菜品',
+            name: '更新後的菜品',
             Description: '更新後的描述',
             Price: 88.88,
-            CategoryId: 1, // 確保此ID存在
+            categoryId: 1, // 確保此ID存在
             IsActive: true
         });
         // console.log('修改菜單項目:', response.data);

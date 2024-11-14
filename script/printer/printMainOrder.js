@@ -17,7 +17,7 @@ function printMainOrder(
             .align('lt')
             .size(1, 1)
             .text('Fang Food 芳鍋')
-            .text(`桌號: ${mainOrder.TableId}`)
+            .text(`桌號: ${mainOrder.tableId}`)
             .text(`訂單編號: ${mainOrder.mainOrderId}`)
             // .qrimage(qrContent, { type: 'png', size: 5 }, function () {
             //     contents.forEach(content => this.text(content));

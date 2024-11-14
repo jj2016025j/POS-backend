@@ -3,13 +3,13 @@ const Joi = require('joi');
 
 // 創建菜單項目的驗證規則
 const createMenuItemSchema = Joi.object({
-    MenuItemName: Joi.string().required().messages({
+    menuItemName: Joi.string().required().messages({
         'string.empty': '菜單項目名稱不能為空',
         'any.required': '必須提供菜單項目名稱'
     }),
-    CategoryId: Joi.number().integer().required().messages({
-        'number.base': 'CategoryId 必須為整數',
-        'any.required': '必須提供 CategoryId'
+    categoryId: Joi.number().integer().required().messages({
+        'number.base': 'categoryId 必須為整數',
+        'any.required': '必須提供 categoryId'
     }),
     Price: Joi.number().integer().min(0).required().messages({
         'number.base': '價格必須為整數',
@@ -17,27 +17,27 @@ const createMenuItemSchema = Joi.object({
         'any.required': '必須提供價格'
     }),
     image_url: Joi.string().uri().optional().allow(null),
-    Insupply: Joi.boolean().optional()
+    insupply: Joi.boolean().optional()
 });
 
 // 編輯菜單項目的驗證規則
 const editMenuItemSchema = Joi.object({
-    Id: Joi.number().integer().required().messages({
-        'number.base': 'Id 必須為整數',
-        'any.required': '必須提供 Id'
+    id: Joi.number().integer().required().messages({
+        'number.base': 'id 必須為整數',
+        'any.required': '必須提供 id'
     }),
-    MenuItemName: Joi.string().optional().allow(null).messages({
+    menuItemName: Joi.string().optional().allow(null).messages({
         'string.base': '菜單項目名稱必須是字串'
     }),
     Price: Joi.number().integer().min(0).optional().allow(null).messages({
         'number.base': '價格必須為整數',
         'number.min': '價格不能為負數'
     }),
-    CategoryId: Joi.number().integer().optional().allow(null).messages({
-        'number.base': 'CategoryId 必須為整數'
+    categoryId: Joi.number().integer().optional().allow(null).messages({
+        'number.base': 'categoryId 必須為整數'
     }),
     image_url: Joi.string().uri().optional().allow(null),
-    Insupply: Joi.boolean().optional().allow(null)
+    insupply: Joi.boolean().optional().allow(null)
 });
 
 const deleteMenuItemSchema = Joi.object({

@@ -3,7 +3,7 @@ const { DataTypes, Model } = require('sequelize');
 
 class mainOrder extends Model {
   static associate(models) {
-      mainOrder.belongsTo(models.Table, { foreignKey: 'TableId' });
+      mainOrder.belongsTo(models.table, { foreignKey: 'tableId' });
   }
 }
 
@@ -14,40 +14,40 @@ mainOrder.initModel = (sequelize) => {
       allowNull: false,
       primaryKey: true
     },
-    SubTotal: {
+    subTotal: {
       type: DataTypes.INTEGER,
       defaultValue: 0
     },
-    ServiceFee: {
+    serviceFee: {
       type: DataTypes.INTEGER,
       defaultValue: 0
     },
-    Total: {
+    total: {
       type: DataTypes.INTEGER,
       defaultValue: 0
     },
-    TableId: {
+    tableId: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    OrderStatus: {
+    orderStatus: {
       type: DataTypes.ENUM('未結帳', '已結帳', '已取消'),
       defaultValue: '未結帳'
     },
-    CreateTime: {
+    createTime: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW
     },
-    UpdateTime: {
+    updateTime: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW
     },
-    PaymentMethod: {
+    paymentMethod: {
       type: DataTypes.ENUM('現金', '信用卡', 'Line pay'),
       defaultValue: '現金'
     },
     
-    UserId: DataTypes.INTEGER,
+    userId: DataTypes.INTEGER,
   }, {
     sequelize,
     modelName: 'mainOrder',

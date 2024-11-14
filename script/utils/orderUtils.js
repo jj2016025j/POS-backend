@@ -65,9 +65,9 @@ const orderUtils = {
                 const total_price = menuItem.Price * quantity;
 
                 orderMappings.push({
-                    MenuItemName: menuItem.MenuItemName,
+                    menuItemName: menuItem.menuItemName,
                     Category: menuItem.Category,
-                    MenuItemId: j + 1, // 假設 MenuItemId
+                    menuItemId: j + 1, // 假設 menuItemId
                     quantity,
                     unit_price: menuItem.Price,
                     total_price,
@@ -82,12 +82,12 @@ const orderUtils = {
 
             orders.push({
                 mainOrderId,
-                TableId: tableId,
-                SubTotal: subTotal,
-                ServiceFee: serviceFee,
-                Total: total,
-                OrderStatus: "未結帳",
-                CreateTime: orderDate.toISOString().replace('T', ' ').slice(0, 19),
+                tableId: tableId,
+                subTotal: subTotal,
+                serviceFee: serviceFee,
+                total: total,
+                orderStatus: "未結帳",
+                createTime: orderDate.toISOString().replace('T', ' ').slice(0, 19),
                 OrderMappings: orderMappings,
             });
         }

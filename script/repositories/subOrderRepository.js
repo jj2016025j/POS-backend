@@ -1,9 +1,9 @@
-const { SubOrder, MenuItem, SubOrderItems } = require('../database/models');
+const { subOrder, menuItem, subOrderItems } = require('../database/models');
 
 module.exports = {
-    async createSubOrder(SubOrderId, mainOrderId) {
-        return await SubOrder.create({
-            SubOrderId,
+    async createSubOrder(subOrderId, mainOrderId) {
+        return await subOrder.create({
+            subOrderId,
             mainOrderId
         });
     },
@@ -12,10 +12,10 @@ module.exports = {
         const queryOptions = {
             include: [
                 {
-                    model: MenuItem,
-                    attributes: ['MenuItemName', 'price'],
+                    model: menuItem,
+                    attributes: ['menuItemName', 'price'],
                     through: {
-                        model: SubOrderItems,
+                        model: subOrderItems,
                         attributes: ['quantity']
                     }
                 }
@@ -24,27 +24,27 @@ module.exports = {
 
         if (mainOrderId) {
             queryOptions.where = { mainOrderId: mainOrderId };
-            const subOrders = await SubOrder.findAll(queryOptions);
+            const subOrders = await subOrder.findAll(queryOptions);
             console.log(subOrders[0].toJSON().MenuItems)
             return subOrders.map(subOrder => ({
                 ...subOrder.toJSON(),
                 MenuItems: subOrder.MenuItems.map(item => ({
-                    MenuItemName: item.MenuItemName,
+                    menuItemName: item.menuItemName,
                     price: item.price,
-                    quantity: item.SubOrderItems.quantity 
+                    quantity: item.subOrderItems.quantity 
                 }))
             }));
         } else if (subOrderId) {
-            queryOptions.where = { SubOrderId: subOrderId };
-            const subOrder = await SubOrder.findOne(queryOptions);
+            queryOptions.where = { subOrderId: subOrderId };
+            const subOrder = await subOrder.findOne(queryOptions);
             if (!subOrder) return null;
 
             return {
                 ...subOrder.toJSON(),
                 MenuItems: subOrder.MenuItems.map(item => ({
-                    MenuItemName: item.MenuItemName,
+                    menuItemName: item.menuItemName,
                     price: item.price,
-                    quantity: item.SubOrderItems.quantity 
+                    quantity: item.subOrderItems.quantity 
                 }))
             };
         }
@@ -53,18 +53,18 @@ module.exports = {
     },
 
     async findSubOrderById(subOrderId) {
-        return await SubOrder.findByPk(subOrderId);
+        return await subOrder.findByPk(subOrderId);
     },
 
 
     async findSubOrdersByMainOrderId(mainOrderId) {
-        return await SubOrder.findAll({ where: { mainOrderId: mainOrderId } });
+        return await subOrder.findAll({ where: { mainOrderId: mainOrderId } });
     },
 
-    async editSubOrder({ subOrderId, OrderStatus, MenuItems }) {
-        // 更新子訂單的狀態（如果提供了 OrderStatus）
-        if (OrderStatus) {
-            await SubOrder.update({ OrderStatus }, { where: { SubOrderId: subOrderId } });
+    async editSubOrder({ subOrderId, orderStatus, MenuItems }) {
+        // 更新子訂單的狀態（如果提供了 orderStatus）
+        if (orderStatus) {
+            await subOrder.update({ orderStatus }, { where: { subOrderId: subOrderId } });
         }
 
         for (const item of MenuItems) {
@@ -72,71 +72,71 @@ module.exports = {
 
             if (quantity === 0 || quantity === null || quantity === undefined) {
                 // 刪除項目
-                await SubOrderItems.destroy({
-                    where: { SubOrderId: subOrderId, MenuItemId: menuItemId }
+                await subOrderItems.destroy({
+                    where: { subOrderId: subOrderId, menuItemId: menuItemId }
                 });
             } else {
                 // 檢查是否存在該子訂單項目
-                const existingItem = await SubOrderItems.findOne({
-                    where: { SubOrderId: subOrderId, MenuItemId: menuItemId }
+                const existingItem = await subOrderItems.findOne({
+                    where: { subOrderId: subOrderId, menuItemId: menuItemId }
                 });
 
                 if (existingItem) {
                     // 如果已經存在，更新數量
-                    await SubOrderItems.update(
+                    await subOrderItems.update(
                         { quantity },
-                        { where: { SubOrderId: subOrderId, MenuItemId: menuItemId } }
+                        { where: { subOrderId: subOrderId, menuItemId: menuItemId } }
                     );
                 } else {
                     // 如果不存在，則新增項目
-                    await SubOrderItems.create({
-                        SubOrderId: subOrderId,
-                        MenuItemId: menuItemId,
+                    await subOrderItems.create({
+                        subOrderId: subOrderId,
+                        menuItemId: menuItemId,
                         quantity
                     });
                 }
             }
         }
 
-        return { subOrderId, OrderStatus, MenuItems };
+        return { subOrderId, orderStatus, MenuItems };
     },
 
     async deleteSubOrder(subOrderId) {
-        const deletedRows = await SubOrder.destroy({ where: { SubOrderId: subOrderId } });
+        const deletedRows = await subOrder.destroy({ where: { subOrderId: subOrderId } });
         return deletedRows ? { subOrderId } : null;
     },
     
     async calculateTotalAmount(subOrderId) {
-        const items = await SubOrderItems.findAll({
-            where: { SubOrderId: subOrderId },
+        const items = await subOrderItems.findAll({
+            where: { subOrderId: subOrderId },
             include: [
                 {
-                    model: MenuItem,
-                    as: 'MenuItem', // 指定別名
+                    model: menuItem,
+                    as: 'menuItem', // 指定別名
                     attributes: ['price']
                 }
             ]
         });
     
         return items.reduce((total, item) => {
-            return total + (item.quantity * item.MenuItem.price);
+            return total + (item.quantity * item.menuItem.price);
         }, 0);
     },
         
     async deleteSubOrder(subOrderId) {
-        const deletedRows = await SubOrder.destroy({ where: { SubOrderId: subOrderId } });
+        const deletedRows = await subOrder.destroy({ where: { subOrderId: subOrderId } });
         return deletedRows ? { subOrderId } : null;
     },
 
     async updateSubOrderTotal(subOrderId, totalAmount) {
-        await SubOrder.update({ totalAmount }, { where: { SubOrderId: subOrderId } });
+        await subOrder.update({ totalAmount }, { where: { subOrderId: subOrderId } });
     },
 
     async getPendingOrders() {
-        return await SubOrder.findAll({ where: { status: '製作中' } });
+        return await subOrder.findAll({ where: { status: '製作中' } });
     },
 
     async findOrderById(orderId) {
-        return await SubOrder.findOne({ where: { id: orderId } });
+        return await subOrder.findOne({ where: { id: orderId } });
     }
 };
