@@ -10,6 +10,6 @@ router.post('/editSubOrder', editSubOrder);
 router.post('/deleteSubOrder', deleteSubOrder);
 
 router.post('/submitSubOrder', submitSubOrder);
-router.post('/cancelSubOrder', cancelSubOrder);           // 標記取消
+router.post('/cancelSubOrder', cancelSubOrder);           
 
 module.exports = router;

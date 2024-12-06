@@ -5,7 +5,7 @@ const { getAllTableInfo, updateTableInfo, getTableInfo, cleanTable, resetAllTabl
 
 // 餐桌操作路由 (table Operations)
 router.get('/getAllTableInfo', getAllTableInfo);
-router.get('/getTableInfo', getTableInfo);
+router.post('/getTableInfo', getTableInfo);
 router.post('/updateTableInfo', updateTableInfo);
 router.post('/cleanTable', cleanTable);
 router.post('/resetAllTable', resetAllTable);

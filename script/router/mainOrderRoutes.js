@@ -6,7 +6,7 @@ const { printQRCode } = require('../controllers/printerController');
 
 // 訂單操作路由 (Order Operations)
 router.post('/createNewOrder', createMainOrder);
-router.get('/getMainOrderInfo', getMainOrderInfo);
+router.post('/getMainOrderInfo', getMainOrderInfo);
 router.post('/editMainOrder', editMainOrder);
 router.get('/getRecentOrders', getRecentOrders);
 router.post('/printQRcode', printQRCode);
