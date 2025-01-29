@@ -1,5 +1,5 @@
 // 使用範例
-const printerModule = require('./printer/index');
+const printerModule = require('./index');
 const defaultOrder = {
     orderNumber: 'A123456',
     orderDate: '2024-03-19',
@@ -12,7 +12,7 @@ const defaultInvoice = {
 };
 
 // 打印QRCODE
-printerModule.printOrderWithQR("https://example.com", "A123456", "10", ["掃碼點餐", "祝用餐愉快"]);
+printerModule.printMainOrder("https://example.com", "A123456", "10", ["掃碼點餐", "祝用餐愉快"]);
 
 // 打印訂單
 printerModule.printOrder(defaultOrder);

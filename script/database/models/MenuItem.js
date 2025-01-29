@@ -1,54 +1,61 @@
-// models/MenuItem.js
+// models/menuItem.js
 const { DataTypes, Model } = require('sequelize');
 
-class MenuItem extends Model {
+class menuItem extends Model {
     static associate(models) {
-        MenuItem.belongsToMany(models.SubOrder, {
-            through: models.SubOrderItems, // 使用聯結表
-            foreignKey: 'MenuItemId',
-            otherKey: 'SubOrderId'
+        menuItem.belongsToMany(models.subOrder, {
+            through: models.subOrderItems,
+            foreignKey: 'menuItemId',
+            otherKey: 'subOrderId'
+        });
+        menuItem.hasMany(models.subOrderItems, { foreignKey: 'menuItemId' });
+
+        // 新增與 Category 的關聯
+        menuItem.belongsTo(models.Category, {
+            foreignKey: 'categoryId',
+            as: 'category' // 可選：設定別名
         });
     }
 }
 
-MenuItem.initModel = (sequelize) => {
-    MenuItem.init({
-        Id: {
+menuItem.initModel = (sequelize) => {
+    menuItem.init({
+        id: {
             type: DataTypes.INTEGER,
             autoIncrement: true,
             primaryKey: true
         },
-        MenuItemName: {
+        menuItemName: {
             type: DataTypes.STRING,
             allowNull: false,
             unique: true
         },
-        CategoryId: {
+        categoryId: {
             type: DataTypes.INTEGER,
             allowNull: false
         },
-        Price: {
+        price: {
             type: DataTypes.INTEGER,
             allowNull: false
         },
-        image_url: DataTypes.TEXT,
-        Insupply: {
+        imageUrl: DataTypes.TEXT,
+        insupply: {
             type: DataTypes.BOOLEAN,
             defaultValue: true
         },
-        CreateTime: {
+        createTime: {
             type: DataTypes.DATE,
             defaultValue: DataTypes.NOW
         },
-        UpdateTime: {
+        updateTime: {
             type: DataTypes.DATE,
             defaultValue: DataTypes.NOW
         },
     }, {
         sequelize,
-        modelName: 'MenuItem',
-        tableName: 'MenuItems',
+        modelName: 'menuItem',
+        tableName: 'menuItems',
     });
 };
 
-module.exports = MenuItem;
+module.exports = menuItem;

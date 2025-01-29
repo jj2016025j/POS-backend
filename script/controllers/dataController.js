@@ -1,4 +1,4 @@
-const { SubOrder, MenuItem, SubOrderItem } = require('../database/models'); // 確保引入所有相關模型
+const { subOrder, menuItem, SubOrderItem } = require('../database/models'); // 確保引入所有相關模型
 const { validateReportParams, generateQueryOptions } = require('../utils/reportUtils');
 const { fn, col } = require('sequelize');
 
@@ -13,7 +13,7 @@ const getDataReport = async (req, res, next) => {
         const queryOptions = generateQueryOptions(params);
 
         // 執行查詢，從子訂單中統計銷售數量和銷售額
-        const reportData = await SubOrder.findAll({});
+        const reportData = await subOrder.findAll({});
 
         res.status(200).json(reportData);
     } catch (error) {

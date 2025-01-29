@@ -1,55 +1,55 @@
-const { Table, MainOrder } = require('../database/models');
+const { table, mainOrder } = require('../database/models');
 
 module.exports = {
     async findAllTables(limit = 100) {
-        return await Table.findAll({ limit });
+        return await table.findAll({ limit });
     },
 
     async updateTableInfo(tableNumber, status, mainOrderId) {
-        return await Table.update(
-            { TablesStatus: status, MainOrderId: mainOrderId },
-            { where: { TableNumber: tableNumber } }
+        return await table.update(
+            { tablesStatus: status, mainOrderId: mainOrderId },
+            { where: { tableNumber: tableNumber } }
         );
     },
 
     async findTableByNumber(tableNumber) {
-        return await Table.findOne({ where: { TableNumber: tableNumber } });
+        return await table.findOne({ where: { tableNumber: tableNumber } });
     },
 
     async findTableByMainOrderId(mainOrderId) {
-        const mainOrder = await MainOrder.findOne({
+        const mainOrder = await mainOrder.findOne({
             where: { mainOrderId },
-            include: [Table],
+            include: [table],
         });
-        return mainOrder ? mainOrder.Table : null;
+        return mainOrder ? mainOrder.table : null;
     },
 
     async resetTableStatus(tableNumber, status) {
-        return await Table.update(
-            { TablesStatus: status, MainOrderId: null },
-            { where: { TableNumber: tableNumber } }
+        return await table.update(
+            { tablesStatus: status, mainOrderId: null },
+            { where: { tableNumber: tableNumber } }
         );
     },
 
     async resetAllTables() {
         // 將所有桌位的狀態設為空桌，並清空訂單
-        return await Table.update(
-            { TablesStatus: '空桌', MainOrderId: null },
+        return await table.update(
+            { tablesStatus: '空桌', mainOrderId: null },
             { where: {} } // 沒有條件，會更新所有桌位
         );
     },
 
-    async resetTableByOrder(TableId) {
-        return await Table.update(
-            { TablesStatus: '空桌', MainOrderId: null },
-            { where: { Id: TableId } }
+    async resetTableByOrder(tableNumber) {
+        return await table.update(
+            { tablesStatus: '空桌', mainOrderId: null },
+            { where: { id: tableNumber } }
         );
     },
 
-    async updateTableStatus(TableId, status) {
-        return await Table.update(
-            { TablesStatus: status },
-            { where: { Id: TableId } }
+    async updateTableStatus(tableNumber, status) {
+        return await table.update(
+            { tablesStatus: status },
+            { where: { id: tableNumber } }
         );
     }
 };

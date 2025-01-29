@@ -2,7 +2,7 @@
 const Joi = require('joi');
 
 const createSubOrderSchema = Joi.object({
-    MainOrderId: Joi.string().required().messages({
+    mainOrderId: Joi.string().required().messages({
         'string.base': 'mainOrderId 必須為字串',
         'any.required': '必須提供 mainOrderId'
     })
@@ -14,8 +14,8 @@ const editSubOrderSchema = Joi.object({
         'string.base': 'subOrderId 必須為字串',
         'any.required': '必須提供 subOrderId'
     }),
-    OrderStatus: Joi.string().valid('未製作', '製作中', '已完成', '已取消').optional(),
-    MenuItems: Joi.array().items(
+    orderStatus: Joi.string().valid('未製作', '製作中', '已完成', '已取消').optional(),
+    menuItems: Joi.array().items(
         Joi.object({
             menuItemId: Joi.number().integer().required().messages({
                 'number.base': 'menuItemId 必須為整數',
@@ -27,8 +27,8 @@ const editSubOrderSchema = Joi.object({
             })
         })
     ).required().messages({
-        'array.base': 'MenuItems 必須為陣列',
-        'any.required': '必須提供 MenuItems'
+        'array.base': 'menuItems 必須為陣列',
+        'any.required': '必須提供 menuItems'
     })
 });
 

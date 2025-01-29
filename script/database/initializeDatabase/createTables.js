@@ -1,35 +1,35 @@
 const Category = require('../models/Category');
-const MenuItem = require('../models/MenuItem');
-const Table = require('../models/Table');
-const MainOrder = require('../models/MainOrder');
-const MainOrderMapping = require('../models/MainOrderMapping');
-const SubOrder = require('../models/SubOrder');
-const SubOrderItems = require('../models/SubOrderItems');
-const User = require('../models/User');
-const TableOperationsLog = require('../models/TableOperationsLog');
+const menuItem = require('../models/menuItem');
+const table = require('../models/table');
+const mainOrder = require('../models/mainOrder');
+const mainOrderItem = require('../models/mainOrderItem');
+const subOrder = require('../models/subOrder');
+const subOrderItems = require('../models/subOrderItems');
+const user = require('../models/user');
+const tableOperationsLog = require('../models/tableOperationsLog');
 
 async function createTables(sequelize) {
   // 初始化模型
   Category.initModel(sequelize);
-  MenuItem.initModel(sequelize);
-  Table.initModel(sequelize);
-  MainOrder.initModel(sequelize);
-  MainOrderMapping.initModel(sequelize);
-  SubOrder.initModel(sequelize);
-  SubOrderItems.initModel(sequelize);
-  User.initModel(sequelize);
-  TableOperationsLog.initModel(sequelize);
+  menuItem.initModel(sequelize);
+  table.initModel(sequelize);
+  mainOrder.initModel(sequelize);
+  mainOrderItem.initModel(sequelize);
+  subOrder.initModel(sequelize);
+  subOrderItems.initModel(sequelize);
+  user.initModel(sequelize);
+  tableOperationsLog.initModel(sequelize);
 
   // 設置表格關聯
-  Category.hasMany(MenuItem, { foreignKey: 'CategoryId' });
-  MenuItem.belongsTo(Category, { foreignKey: 'CategoryId' });
+  Category.hasMany(menuItem, { foreignKey: 'categoryId' });
+  menuItem.belongsTo(Category, { foreignKey: 'categoryId' });
 
-  Table.hasMany(MainOrder, { foreignKey: 'TableId' });
-  MainOrder.belongsTo(Table, { foreignKey: 'TableId' });
+  table.hasMany(mainOrder, { foreignKey: 'tableNumber' });
+  mainOrder.belongsTo(table, { foreignKey: 'tableNumber' });
 
   await sequelize.sync({});
   // await sequelize.sync({ alter: true, force: true });
-  console.log('\n所有表格已同步');
+  console.log('所有表格已同步\n');
 }
 
 module.exports = createTables;

@@ -4,15 +4,15 @@
 function generateTimeCondition(timeRange, tableName = 'MainOrders') {
   switch (timeRange) {
       case 'last24Hours':
-          return `${tableName}.CreateTime >= NOW() - INTERVAL 24 HOUR`;
+          return `${tableName}.createTime >= NOW() - INTERVAL 24 HOUR`;
       case 'lastWeek':
-          return `${tableName}.CreateTime >= CURDATE() - INTERVAL 7 DAY`;
+          return `${tableName}.createTime >= CURDATE() - INTERVAL 7 DAY`;
       case 'lastMonth':
-          return `${tableName}.CreateTime >= CURDATE() - INTERVAL 1 MONTH`;
+          return `${tableName}.createTime >= CURDATE() - INTERVAL 1 MONTH`;
       case 'last6Months':
-          return `${tableName}.CreateTime >= CURDATE() - INTERVAL 6 MONTH`;
+          return `${tableName}.createTime >= CURDATE() - INTERVAL 6 MONTH`;
       case 'lastYear':
-          return `${tableName}.CreateTime >= CURDATE() - INTERVAL 1 YEAR`;
+          return `${tableName}.createTime >= CURDATE() - INTERVAL 1 YEAR`;
       case 'all':
           return '1=1';
       default:

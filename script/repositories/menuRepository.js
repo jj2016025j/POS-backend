@@ -1,46 +1,46 @@
-const { MenuItem, Category } = require('../database/models');
+const { menuItem, Category } = require('../database/models');
 
 module.exports = {
     async getAllMenuItems(limit, order, categoryId) {
         const queryOptions = {
             include: {
                 model: Category,
-                attributes: ['Id'], // 只查詢 Category 的 ID
+                attributes: ['id'], // 只查詢 Category 的 ID
             },
             limit: parseInt(limit),
-            order: [['MenuItemName', order.toUpperCase()]]
+            order: [['menuItemName', order.toUpperCase()]]
         };
 
         if (categoryId) {
-            queryOptions.where = { CategoryId: categoryId };
+            queryOptions.where = { categoryId: categoryId };
         }
 
-        const menuItems = await MenuItem.findAll(queryOptions);
+        const menuItems = await menuItem.findAll(queryOptions);
 
         // 格式化返回的資料，將 Category 轉換為單一 ID
         return menuItems.map(item => {
             const itemData = item.toJSON(); // 轉為普通 JavaScript 對象
-            itemData.Category = item.Category ? item.Category.Id : null; // 將 Category 對象轉換為 ID
+            itemData.Category = item.Category ? item.Category.id : null; // 將 Category 對象轉換為 ID
             return itemData;
         });
     },
 
     async addNewMenuItem(data) {
-        return await MenuItem.create(data);
+        return await menuItem.create(data);
     },
 
     async editMenuItem(data) {
-        const { Id, ...updateData } = data;
-        return await MenuItem.update(updateData, { where: { Id } });
+        const { id, ...updateData } = data;
+        return await menuItem.update(updateData, { where: { id } });
     },
 
     async deleteMenuItem(menuItemId) {
-        return await MenuItem.destroy({ where: { Id: menuItemId } });
+        return await menuItem.destroy({ where: { id: menuItemId } });
     },
 
     async getAllCategories() {
         return await Category.findAll({
-            attributes: ['Id', 'CategoryName', 'Description'] // 僅選擇必要的欄位
+            attributes: ['id', 'categoryName', 'Description'] // 僅選擇必要的欄位
         });
     },
 };

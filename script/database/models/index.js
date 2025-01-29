@@ -1,62 +1,83 @@
-// models/index.js
 const { sequelize } = require('../../config/databaseConfig');
 
 const Category = require('./Category');
-const MainOrder = require('./MainOrder');
-const MenuItem = require('./MenuItem');
-const SubOrderItems = require('./SubOrderItems'); 
-const SubOrder = require('./SubOrder');
-const Table = require('./Table');
-const User = require('./User');
-const MainOrderMapping = require('./MainOrderMapping');
-const TableOperationsLog = require('./TableOperationsLog');
+const mainOrder = require('./mainOrder');
+const menuItem = require('./menuItem');
+const subOrderItems = require('./subOrderItems'); 
+const subOrder = require('./subOrder');
+const table = require('./table');
+const user = require('./user');
+const mainOrderItem = require('./mainOrderItem');
+const tableOperationsLog = require('./tableOperationsLog');
 
 // 初始化模型
 Category.initModel(sequelize);
-MainOrder.initModel(sequelize);
-MenuItem.initModel(sequelize);
-SubOrderItems.initModel(sequelize);
-SubOrder.initModel(sequelize);
-Table.initModel(sequelize);
-User.initModel(sequelize);
-MainOrderMapping.initModel(sequelize);
-TableOperationsLog.initModel(sequelize);
+mainOrder.initModel(sequelize);
+menuItem.initModel(sequelize);
+subOrderItems.initModel(sequelize);
+subOrder.initModel(sequelize);
+table.initModel(sequelize);
+user.initModel(sequelize);
+mainOrderItem.initModel(sequelize);
+tableOperationsLog.initModel(sequelize);
 
 // 設置表格關聯
-Category.hasMany(MenuItem, { foreignKey: 'CategoryId' });
-MenuItem.belongsTo(Category, { foreignKey: 'CategoryId' });
+Category.associate = (models) => {
+    Category.hasMany(models.menuItem, { foreignKey: 'categoryId' });
+};
 
-Table.hasMany(MainOrder, { foreignKey: 'TableId' });
-MainOrder.belongsTo(Table, { foreignKey: 'TableId' });
+menuItem.associate = (models) => {
+    menuItem.belongsTo(models.Category, { foreignKey: 'categoryId' });
+    menuItem.belongsToMany(models.subOrder, {
+        through: models.subOrderItems,
+        foreignKey: 'menuItemId',
+        otherKey: 'subOrderId',
+    });
+    menuItem.hasMany(models.subOrderItems, { foreignKey: 'menuItemId', as: 'OrderItems' }); // 唯一別名
+};
 
-MainOrder.hasMany(SubOrder, { foreignKey: 'MainOrderId' });
-SubOrder.belongsTo(MainOrder, { foreignKey: 'MainOrderId' });
+table.associate = (models) => {
+    table.hasMany(models.mainOrder, { foreignKey: 'tableNumber' });
+};
 
-Table.associate({ MainOrder });
-MainOrder.associate({ Table });
+mainOrder.associate = (models) => {
+    mainOrder.belongsTo(models.table, { foreignKey: 'tableNumber' });
+    mainOrder.hasMany(models.subOrder, { foreignKey: 'mainOrderId' });
+};
 
-SubOrder.belongsToMany(MenuItem, {
-    through: SubOrderItems,
-    foreignKey: 'SubOrderId',
-    otherKey: 'MenuItemId'
-});
+subOrder.associate = (models) => {
+    subOrder.belongsTo(models.mainOrder, { foreignKey: 'mainOrderId' });
+    subOrder.belongsToMany(models.menuItem, {
+        through: models.subOrderItems,
+        foreignKey: 'subOrderId',
+        otherKey: 'menuItemId',
+    });
+    subOrder.hasMany(models.subOrderItems, { foreignKey: 'subOrderId', as: 'OrderItems' }); // 唯一別名
+};
 
-MenuItem.belongsToMany(SubOrder, {
-    through: SubOrderItems,
-    foreignKey: 'MenuItemId',
-    otherKey: 'SubOrderId'
-});
+subOrderItems.associate = (models) => {
+    subOrderItems.belongsTo(models.menuItem, { foreignKey: 'menuItemId', as: 'menuItem' });
+    subOrderItems.belongsTo(models.subOrder, { foreignKey: 'subOrderId', as: 'subOrder' });
+};
+
+// 調用各模型的 associate 方法設置關聯
+Category.associate({ menuItem });
+menuItem.associate({ subOrder, Category, subOrderItems });
+table.associate({ mainOrder });
+mainOrder.associate({ table, subOrder });
+subOrder.associate({ mainOrder, menuItem, subOrderItems });
+subOrderItems.associate({ menuItem, subOrder });
 
 // 導出所有模型和 Sequelize 實例
 module.exports = {
     sequelize,
     Category,
-    MainOrder,
-    MenuItem,
-    SubOrderItems,
-    SubOrder,
-    Table,
-    User,
-    MainOrderMapping,
-    TableOperationsLog
+    mainOrder,
+    menuItem,
+    subOrderItems,
+    subOrder,
+    table,
+    user,
+    mainOrderItem,
+    tableOperationsLog
 };

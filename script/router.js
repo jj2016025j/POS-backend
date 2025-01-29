@@ -8,7 +8,7 @@ const mainOrderRoutes = require('./router/mainOrderRoutes');
 const subOrderRoutes = require('./router/subOrderRoutes');
 const paymentRoutes = require('./router/paymentRoutes');
 const dataRoutes = require('./router/dataRoutes');
-const testRoutes = require('./router/testRoutes');
+const printerRoutes = require('./router/printerRoutes');
 
 module.exports = (app) => {
     // // 認證路由設定
@@ -31,5 +31,5 @@ module.exports = (app) => {
     app.use('/subOrder', subOrderRoutes);
     app.use('/pay', paymentRoutes);
     app.use('/data', dataRoutes);
-    app.use('/test', testRoutes);
+    app.use('/printer', printerRoutes);
 };
