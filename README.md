@@ -1,6 +1,6 @@
 # 點餐POS系統後端
 
-提供顧客線上點餐，本項目包含後台點餐POS系統。
+提供顧客線上點餐，本項目包含後台點餐POS系統後端。
 
 ## 功能特點
 
@@ -9,7 +9,6 @@
 
 ## 技術棧
 
-- 前端：React, Bootstrap, SCSS
 - 後端：Node.js, Express
 - 數據庫：MySQL
 
@@ -17,7 +16,7 @@
 
 # 克隆項目
 ```bash
-git clone https://github.com/jj2016025j/FANGS-FOOD-POS-System.git
+git clone https://github.com/jj2016025j/POS-backend.git
 ```
 
 # 建立.env檔案 並貼上以下內容
@@ -34,47 +33,16 @@ TEST_MYSQL_DATABASE = 'fang_pos_system'
 npm i
 ```
 
-# 執行初始化資料表
-```bash
-node initDB
-```
-
 # 運行項目
 ```bash
 npm start
 ```
--也可以點擊 mysql_and_server_start.bat 自動開啟後端伺服器以及資料庫
--或是先點擊 mysql_start.bat 啟動資料庫 然後點擊 server_start.bat 來啟用後端伺服器
--如果使用過 mysql_start.bat 後關閉視窗，並不會自動關閉資料庫，可以點擊 mysql_close.bat 來關閉資料庫
--如果使用過 mysql_start.bat 後關閉視窗，下次再使用 mysql_start.bat 時會報錯，要先點擊 mysql_close.bat 來關閉資料庫才會不報錯，不過並不會影響資料庫的執行
 
 ## **使用說明**
 
-- **網站訪問**：在終端機會顯示以下內容，點擊他或是在瀏覽器中輸入**`http://localhost:8080`**訪問芳鍋網站。
+- **網站訪問**：
 ```bash
-官方網站: http://localhost:8080
-pos系統: http://localhost:8080/pos
-局域網 IPv4 地址:  http://192.168.1.243:8080
-```
-
-# 錯誤修正
-因為打印機操作庫有版本問題
-會發生以下錯誤
-
-```bash
-TypeError: usb.on is not a function
-at new USB (path/to/FANGS-FOOD-POS-System\node_modules\escpos-usb\index.js:52:7)
-```
-
-需要把腳本裡面的以下程式碼刪除
-```bash
-usb.on('detach', function(device){
-  if(device == self.device) {
-    self.emit('detach'    , device);
-    self.emit('disconnect', device);
-    self.device = null;
-  }
-});
+pos系後端: http://localhost:8000
 ```
 
 ## **貢獻指南**
@@ -96,4 +64,3 @@ usb.on('detach', function(device){
 如有任何問題或建議，請通過以下方式聯絡我們：
 
 - 郵件：jj2016025j@gmail.com
-- 電話：0971-003-199
