@@ -25,7 +25,8 @@ module.exports = {
         if (mainOrderId) {
             queryOptions.where = { mainOrderId: mainOrderId };
             const subOrders = await subOrder.findAll(queryOptions);
-            console.log(subOrders[0].toJSON().menuItems)
+            // console.log(subOrders[0].toJSON().menuItems)
+            console.log(subOrders)
             return subOrders.map(subOrder => ({
                 ...subOrder.toJSON(),
                 menuItems: subOrder.menuItems.map(item => ({

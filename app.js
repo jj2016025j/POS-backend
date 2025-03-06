@@ -6,7 +6,7 @@ dotenv.config();
 
 const express = require('express');
 const app = express();
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 8000;
 
 // 2. 環境檢查與配置
 const NODE_ENV = process.env.NODE_ENV || 'development';

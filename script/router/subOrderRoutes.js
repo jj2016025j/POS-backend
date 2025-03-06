@@ -5,7 +5,7 @@ const { createSubOrder, deleteSubOrder, getSubOrderInfo, editSubOrder, submitSub
 
 // 子訂單操作路由 (Sub Order Operations)
 router.post('/createSubOrder', createSubOrder);
-router.get('/getSubOrderInfo', getSubOrderInfo);
+router.post('/getSubOrderInfo', getSubOrderInfo);
 router.post('/editSubOrder', editSubOrder);
 router.post('/deleteSubOrder', deleteSubOrder);
 
