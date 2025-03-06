@@ -7,9 +7,9 @@ const fakePrinter = {
   close: () => console.log("Fake printer closed"),
 };
 
-const device = process.env.PRINTER_TEST ? fakePrinter : new escpos.USB();
-const options = { encoding: "Big5", width: 42 };
-const printer = new escpos.Printer(device, options);
+// const device = process.env.PRINTER_TEST ? fakePrinter : new escpos.USB();
+// const options = { encoding: "Big5", width: 42 };
+// const printer = new escpos.Printer(device, options);
 
 const connectAndPrint = (printCallback) => {
   device.open((error) => {
